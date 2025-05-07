@@ -25,7 +25,6 @@ public class Usuario {
     
     public Usuario() {
     }
-
     public Usuario(Long id, String nombreUsuario, String contrasena, Rol rol, Estado estado) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;

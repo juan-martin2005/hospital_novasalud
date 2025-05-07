@@ -6,4 +6,6 @@ import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 
 public interface IEstadoRepository extends CrudRepository<Estado, Integer> {
     Estado findByNombreEstado(String n);
+    Estado findById(int n);
+
 }
