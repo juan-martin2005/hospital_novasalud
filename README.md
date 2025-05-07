@@ -1,5 +1,5 @@
-#Backend con java y Spring boot  
-Instalar las extenxiones:
+# Backend con java y Spring boot  
+Tener instalado Postman para las peticiones HTTP e instalar las extenxiones en visual studio code:
 - Spring Boot extension Pack
-- Extension Pack for Java
-Tener instalado Postman para las peticiones HTTP
+- Extension Pack for Java  
+
