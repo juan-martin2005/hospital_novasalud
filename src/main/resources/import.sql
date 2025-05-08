@@ -4,4 +4,4 @@ insert into rol(nombre_rol) values ('Recepcionista');
 insert into rol(nombre_rol) values ('Paciente');
 
 insert into estado(nombre_estado) values ('Activo');
-insert into estado(nombre_estado) values ('Desactivo');
+insert into estado(nombre_estado) values ('Inactivo');

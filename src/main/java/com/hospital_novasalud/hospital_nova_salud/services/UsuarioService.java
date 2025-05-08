@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.hospital_novasalud.hospital_nova_salud.dto.UsuarioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
@@ -31,26 +32,32 @@ public class UsuarioService implements IUsuarioService{
     }
     
     @Override
-    public ResponseEntity<Map<String,String>> save(String n, String c, int r) {
-        Map<String, String> mensaje = new HashMap<>();
-        if(!existsByNombreUsuario(n)){
-            usuarioRepository.existsByNombreUsuario(n);
+    public ResponseEntity<?> save(Usuario us) {
+        Map<String, String> response = new HashMap<>();
+        
+        if(!existsByNombreUsuario(us.getNombreUsua())){
+
             Usuario usuario = new Usuario();
-            Rol rol = rolRepository.findById(r);
-            Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo
-            usuario.setNombreUsuario(n);
-            usuario.setContrasena(c);
+            usuario.setNombreUsua(us.getNombreUsua());
+            usuario.setContrasena(us.getContrasena());
+            usuario.setNombre(us.getNombre());
+            usuario.setDni(us.getDni());
+            usuario.setNumero(us.getNumero());
+            usuario.setSexo(us.getSexo());
+            Rol rol = rolRepository.findById(us.getRol().getId());
+            Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
             usuario.setRol(rol);
             usuario.setEstado(estado);
+            response.put("mensaje", "Usuario creado con exito");
             usuarioRepository.save(usuario);
-            mensaje.put("mensaje","Usuario registrado correctamente");
-        }else{ mensaje.put("error","El nombre de usuario ya existe");}
-        return mensaje.containsKey("mensaje")? ResponseEntity.status(HttpStatus.CREATED).body(mensaje) : ResponseEntity.status(HttpStatus.CONFLICT).body(mensaje);
+        }else response.put("error","El usuario ya existe");
+        return response.containsKey("error") ? ResponseEntity.status(HttpStatus.CONFLICT).body(response) : ResponseEntity.status(HttpStatus.CREATED).body(response);
+        
     }
     @Override
     public boolean existsByNombreUsuarioAndContrasena(String n, String c) {
         
-        return usuarioRepository.existsByNombreUsuarioAndContrasena(n, c);
+        return usuarioRepository.existsByNombreUsuaAndContrasena(n, c);
     }
 
 
@@ -61,7 +68,7 @@ public class UsuarioService implements IUsuarioService{
 
     @Override
     public boolean existsByNombreUsuario(String n) {
-        return usuarioRepository.existsByNombreUsuario(n);
+        return usuarioRepository.existsByNombreUsua(n);
     }
 
 
