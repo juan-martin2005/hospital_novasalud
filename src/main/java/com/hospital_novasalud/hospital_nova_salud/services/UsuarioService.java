@@ -1,6 +1,7 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ public class UsuarioService implements IUsuarioService{
     IEstadoRepository estadoRepository;
     
     @Override
-    public Iterable<Usuario> findAll() {
-        return usuarioRepository.findAll();
+    public List<UsuarioDto> findAll() {
+        return usuarioRepository.findAll().stream().map(UsuarioDto::new).toList();
     }
     
     @Override
@@ -70,6 +71,7 @@ public class UsuarioService implements IUsuarioService{
     public boolean existsByNombreUsuario(String n) {
         return usuarioRepository.existsByNombreUsua(n);
     }
+
 
 
 }
