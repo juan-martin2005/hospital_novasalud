@@ -42,6 +42,7 @@ public class UsuarioService implements IUsuarioService{
             usuario.setNombreUsua(us.getNombreUsua());
             usuario.setContrasena(us.getContrasena());
             usuario.setNombre(us.getNombre());
+            usuario.setApellido(us.getApellido());
             usuario.setDni(us.getDni());
             usuario.setNumero(us.getNumero());
             usuario.setSexo(us.getSexo());

@@ -2,8 +2,8 @@ package com.hospital_novasalud.hospital_nova_salud.models;
 
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -28,13 +28,14 @@ public class Doctor{
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
-    private Date horarioAtencion;
+    private LocalTime horarioAtencion;
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<RecetaMedica> recetaMedica;
+    
     public Doctor() {
     }
-
-    public Doctor(Long id, Especialidad especialidad, Usuario usuario, Date horarioAtencion) {
+    
+    public Doctor(Long id, Especialidad especialidad, Usuario usuario, LocalTime horarioAtencion) {
         this.id = id;
         this.especialidad = especialidad;
         this.usuario = usuario;
@@ -44,29 +45,44 @@ public class Doctor{
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public Especialidad getEspecialidad() {
         return especialidad;
     }
-
+    
     public void setEspecialidad(Especialidad especialidad) {
         this.especialidad = especialidad;
     }
-
-    public Date getHorarioAtencion() {
+    
+    public Usuario getUsuario() {
+        return usuario;
+    }
+    
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
+    public LocalTime getHorarioAtencion() {
         return horarioAtencion;
     }
-
-    public void setHorarioAtencion(Date horarioAtencion) {
+    
+    public void setHorarioAtencion(LocalTime horarioAtencion) {
         this.horarioAtencion = horarioAtencion;
     }
-
+    
     public void registrarHorario(){
         
+    }
+    public List<RecetaMedica> getRecetaMedica() {
+        return recetaMedica;
+    }
+    
+    public void setRecetaMedica(List<RecetaMedica> recetaMedica) {
+        this.recetaMedica = recetaMedica;
     }
     public RecetaMedica generarReceta(Doctor d, Paciente p, Medicamento m, String dosis, String frecuencia){
         RecetaMedica recetaMedica = new RecetaMedica();
