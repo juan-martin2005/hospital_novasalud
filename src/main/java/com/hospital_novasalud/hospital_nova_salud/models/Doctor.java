@@ -84,7 +84,7 @@ public class Doctor{
     public void setRecetaMedica(List<RecetaMedica> recetaMedica) {
         this.recetaMedica = recetaMedica;
     }
-    public RecetaMedica generarReceta(Doctor d, Paciente p, Medicamento m, String dosis, String frecuencia){
+    public RecetaMedica generarReceta(Doctor d, Paciente p, Medicamento m, String mensaje){
         RecetaMedica recetaMedica = new RecetaMedica();
         LocalDateTime fechaCreada = LocalDateTime.now();
         DateTimeFormatter formatear = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -92,8 +92,7 @@ public class Doctor{
         recetaMedica.setDoctor(d);
         recetaMedica.setPaciente(p);
         recetaMedica.setMedicamento(m);
-        recetaMedica.setDosis(dosis);
-        recetaMedica.setFrecuencia(frecuencia);
+        recetaMedica.setMensaje(mensaje);
         recetaMedica.setFechaCreada(fecha);
         return recetaMedica;
     }

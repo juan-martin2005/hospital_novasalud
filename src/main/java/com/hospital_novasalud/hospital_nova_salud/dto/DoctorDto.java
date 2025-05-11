@@ -7,12 +7,16 @@ import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 public class DoctorDto {
     private String nombre;
     private String apellido;
+    private String numero;
+    private char sexo;
     private String especialidad;
     private LocalTime horarioAtencion;
 
     public DoctorDto(Doctor doc){
         this.nombre = doc.getUsuario().getNombre();
         this.apellido = doc.getUsuario().getApellido();
+        this.numero = doc.getUsuario().getNumero();
+        this.sexo = doc.getUsuario().getSexo();
         this.especialidad = doc.getEspecialidad().getNombre();
         this.horarioAtencion = doc.getHorarioAtencion();
     }
@@ -31,6 +35,22 @@ public class DoctorDto {
 
     public void setApellido(String apellido) {
         this.apellido = apellido;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public char getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(char sexo) {
+        this.sexo = sexo;
     }
 
     public String getEspecialidad() {
