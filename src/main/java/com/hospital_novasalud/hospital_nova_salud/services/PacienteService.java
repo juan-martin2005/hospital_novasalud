@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
@@ -12,6 +13,7 @@ import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IPacienteRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
 
+@Service
 public class PacienteService implements IPacienteService{
 
     @Autowired
@@ -36,7 +38,7 @@ public class PacienteService implements IPacienteService{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
         }
         if(existsByUsuarioId(pa.getUsuario().getId()) ){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El recepcionista ya existe");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El paciente ya existe");
         }
         // if( ){
         // logica para saber si el usario es distinto al rol de paciente
@@ -50,10 +52,6 @@ public class PacienteService implements IPacienteService{
     @Override
     public void delete(Long id) {
         pacienteRepository.deleteById(id);
-    }
-    @Override
-    public boolean existsByDni(String dni) {
-        return pacienteRepository.existsByDni(dni);
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 
 public interface IUsuarioService {
 
-    boolean existsByNombreUsuarioAndContrasena(String n, String c);
     boolean existsByNombreUsuario(String n);
     List<UsuarioDto> findAll();
     ResponseEntity<?> save(Usuario us);

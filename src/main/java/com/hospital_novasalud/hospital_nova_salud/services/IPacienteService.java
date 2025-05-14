@@ -9,7 +9,6 @@ import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
 
 public interface IPacienteService {
     List<PacienteDto> findAll();
-    boolean existsByDni(String dni);
     boolean existsByUsuarioId(Long id);
     ResponseEntity<?> save(Paciente paciente);
     void delete(Long id);

@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class AppConfig{
+public class CorsAppConfiguration{
 
     @Bean
     public WebMvcConfigurer corsConfiguration(){
@@ -14,7 +14,7 @@ public class AppConfig{
             @Override
             public void addCorsMappings(CorsRegistry registry){
                 registry.addMapping("/**")
-                .allowedOrigins("http:/localhost:4200")
+                .allowedOrigins("http://localhost:4200")
                 .allowedHeaders("GET","POST","PUT","DELETE")
                 .allowCredentials(true);
             }

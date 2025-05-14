@@ -17,8 +17,6 @@ public class Paciente {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
-    private final static int cantidadCitas = 0;
-    private final static int cantidadRecetas = 0;
     
     public Paciente() {
     }
@@ -38,11 +36,5 @@ public class Paciente {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    public static int getCantidadcitas() {
-        return cantidadCitas;
-    }
-    public static int getCantidadrecetas() {
-        return cantidadRecetas;
-    }
-    
+
 }

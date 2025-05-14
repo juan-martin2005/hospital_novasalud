@@ -56,12 +56,6 @@ public class UsuarioService implements IUsuarioService{
         return response.containsKey("error") ? ResponseEntity.status(HttpStatus.CONFLICT).body(response) : ResponseEntity.status(HttpStatus.CREATED).body(response);
         
     }
-    @Override
-    public boolean existsByNombreUsuarioAndContrasena(String n, String c) {
-        
-        return usuarioRepository.existsByNombreUsuaAndContrasena(n, c);
-    }
-
 
     @Override
     public void deleteById(Long id) {
