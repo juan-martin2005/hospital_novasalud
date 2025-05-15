@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +26,19 @@ public class DoctorController {
     public List<DoctorDto> listarDoctores(){
         return doctorService.findAll();
     }
+    @GetMapping("/listar-especialidad/{id}")
+    public List<DoctorDto> listarDoctoresPorEspecialidad(@PathVariable Long id){
+        return doctorService.findByEspecialidad(id);
+    }
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarDoctor(@RequestBody Doctor doctor){
         return doctorService.save(doctor);
+    }
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
+        doctorService.deleteById(id);
+        return ResponseEntity.ok("Usuario eliminado con exito");
     }
 }

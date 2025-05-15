@@ -1,8 +1,7 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +28,11 @@ public class UsuarioService implements IUsuarioService{
     
     @Override
     public List<UsuarioDto> findAll() {
-        return usuarioRepository.findAll().stream().map(UsuarioDto::new).toList();
+        return usuarioRepository.findAllByEstadoId(1).stream().map(UsuarioDto::new).toList();
     }
     
     @Override
     public ResponseEntity<?> save(Usuario us) {
-        Map<String, String> response = new HashMap<>();
         
         if(!existsByNombreUsuario(us.getNombreUsua())){
 
@@ -50,23 +48,29 @@ public class UsuarioService implements IUsuarioService{
             Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
             usuario.setRol(rol);
             usuario.setEstado(estado);
-            response.put("mensaje", "Usuario creado con exito");
             usuarioRepository.save(usuario);
-        }else response.put("error","El usuario ya existe");
-        return response.containsKey("error") ? ResponseEntity.status(HttpStatus.CONFLICT).body(response) : ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado con exito");
+        }else return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe");
         
     }
 
     @Override
-    public void deleteById(Long id) {
-        usuarioRepository.deleteById(id);
+    public ResponseEntity<?> deleteById(Long id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        if(usuario.isEmpty() || usuario.get().getEstado().getId() == 2){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+        Estado estado = estadoRepository.findById(2); //1=Activo, 2=Inactivo
+        Usuario user = usuario.get();
+        user.setEstado(estado);
+        usuarioRepository.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado con exito");
+
     }
 
     @Override
     public boolean existsByNombreUsuario(String n) {
         return usuarioRepository.existsByNombreUsua(n);
     }
-
-
 
 }

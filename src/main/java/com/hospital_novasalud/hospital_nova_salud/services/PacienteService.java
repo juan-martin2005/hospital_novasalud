@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
+import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IPacienteRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
 
 @Service
@@ -20,6 +22,8 @@ public class PacienteService implements IPacienteService{
     IPacienteRepository pacienteRepository;
     @Autowired
     IUsuarioRepository usuarioRepository;
+    @Autowired
+    IRolRepository rolRepository;
     @Override
     public List<PacienteDto> findAll() {
         return pacienteRepository.findAll().stream().map(PacienteDto::new).toList();
@@ -29,7 +33,7 @@ public class PacienteService implements IPacienteService{
     @Override
     public ResponseEntity<?> save(Paciente pa) {
         Usuario usuario = usuarioRepository.findById(pa.getUsuario().getId()).orElse(null);
-
+        Rol rol = rolRepository.findById(4);
         if(usuario == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro el usuario");
         }
@@ -40,9 +44,9 @@ public class PacienteService implements IPacienteService{
         if(existsByUsuarioId(pa.getUsuario().getId()) ){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El paciente ya existe");
         }
-        // if( ){
-        // logica para saber si el usario es distinto al rol de paciente
-        // }
+        if(rol != usuario.getRol()){
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No es paciente");
+        }
         Paciente paciente = new Paciente();
         paciente.setUsuario(usuario);
         pacienteRepository.save(paciente);
@@ -50,7 +54,7 @@ public class PacienteService implements IPacienteService{
     }
     
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         pacienteRepository.deleteById(id);
     }
 

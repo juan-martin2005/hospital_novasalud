@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
+import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
 
 @Service
@@ -24,7 +26,8 @@ public class DoctorService implements IDoctorService{
     IEspecialidadRepository especialidadRepository;
     @Autowired
     IUsuarioRepository usuarioRepository;
-
+    @Autowired
+    IRolRepository rolRepository;
     @Override
     public List<DoctorDto> findAll() {
         return doctorRepository.findAll().stream().map(DoctorDto::new).toList();
@@ -35,7 +38,7 @@ public class DoctorService implements IDoctorService{
         
         Especialidad especialidad = especialidadRepository.findById(doc.getEspecialidad().getId()).orElse(null);
         Usuario usuario = usuarioRepository.findById(doc.getUsuario().getId()).orElse(null);
-
+        Rol rol = rolRepository.findById(2);
         if(especialidad == null || usuario == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro la especialidad o el usuario");
         }
@@ -46,6 +49,11 @@ public class DoctorService implements IDoctorService{
         if(existsByUsuarioId(doc.getUsuario().getId()) && existsByEspecialidadId(doc.getEspecialidad().getId())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El doctor ya cuenta con esa especialidad");
         }
+        
+        if(rol != usuario.getRol()){
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No es doctor");
+        }
+        
         Doctor doctor = new Doctor();
         doctor.setUsuario(usuario);
         doctor.setEspecialidad(especialidad);
@@ -69,6 +77,11 @@ public class DoctorService implements IDoctorService{
     @Override
     public boolean existsByUsuarioId(Long id) {
         return doctorRepository.existsByUsuarioId(id);
+    }
+
+    @Override
+    public List<DoctorDto> findByEspecialidad(Long id) {  
+        return doctorRepository.findByEspecialidadId(id).stream().map(DoctorDto::new).toList();
     }
 
 }

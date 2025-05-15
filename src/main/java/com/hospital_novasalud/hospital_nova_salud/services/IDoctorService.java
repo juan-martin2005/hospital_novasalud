@@ -10,6 +10,7 @@ import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 public interface IDoctorService {
 
     List<DoctorDto> findAll();
+    List<DoctorDto> findByEspecialidad(Long id);
     ResponseEntity<?> save(Doctor doc);
     void deleteById(Long id);
     boolean existsByEspecialidadId(Long id);

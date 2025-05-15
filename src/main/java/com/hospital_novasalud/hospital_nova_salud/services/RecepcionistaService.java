@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.RecepcionistaDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Recepcionista;
+import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRecepcionistaRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
@@ -37,20 +38,20 @@ public class RecepcionistaService implements IRecepcionistaService{
     @Override
     public ResponseEntity<?> save(Recepcionista re) {
         Usuario usuario = usuarioRepository.findById(re.getUsuario().getId()).orElse(null);
-
+        Rol rol = rolRepository.findById(3);
         if(usuario == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro el usuario");
         }
 
         if(re.getId() != null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario no es recepcionista");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
         }
         if(existsByUsuarioId(re.getUsuario().getId()) ){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El recepcionista ya existe");
         }
-        // if(){
-        //    Logica para saber si el usario es distinto al rol de recepcionista
-        // }
+        if(rol != usuario.getRol()){
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No es recepcionista");
+        }
         Recepcionista recepcionista = new Recepcionista();
         recepcionista.setUsuario(usuario);
         recepcionistaRepository.save(recepcionista);
@@ -61,6 +62,11 @@ public class RecepcionistaService implements IRecepcionistaService{
     @Override
     public boolean existsByUsuarioId(Long id) {
         return recepcionistaRepository.existsByUsuarioId(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        recepcionistaRepository.deleteById(id);
     }
 
 }

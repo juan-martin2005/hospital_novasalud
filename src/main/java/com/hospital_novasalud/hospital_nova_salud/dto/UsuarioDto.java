@@ -11,7 +11,6 @@ public class UsuarioDto {
     private final String numero;
     private final char sexo;
     private final String rol;
-    private final String estado;
 
     public UsuarioDto(Usuario usuario) {
         this.nombreUsua = usuario.getNombreUsua();
@@ -21,7 +20,6 @@ public class UsuarioDto {
         this.numero = usuario.getNumero();
         this.sexo = usuario.getSexo();
         this.rol = usuario.getRol().getNombreRol();
-        this.estado = usuario.getEstado().getNombreEstado();
     }
 
     public String getDni() {
@@ -52,8 +50,4 @@ public class UsuarioDto {
         return rol;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-    
 }

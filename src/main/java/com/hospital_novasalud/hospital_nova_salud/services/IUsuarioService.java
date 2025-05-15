@@ -12,6 +12,6 @@ public interface IUsuarioService {
     boolean existsByNombreUsuario(String n);
     List<UsuarioDto> findAll();
     ResponseEntity<?> save(Usuario us);
-    void deleteById(Long id);
+    ResponseEntity<?> deleteById(Long id);
 
 }

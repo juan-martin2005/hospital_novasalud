@@ -11,5 +11,6 @@ public interface IRecepcionistaService {
     List<RecepcionistaDto> findAll();
     RecepcionistaDto findById(Long id);
     ResponseEntity<?> save (Recepcionista re);
+    void deleteById(Long id);
     boolean existsByUsuarioId(Long id);
 }
