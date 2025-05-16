@@ -35,7 +35,9 @@ public class UsuarioService implements IUsuarioService{
     public ResponseEntity<?> save(Usuario us) {
         
         if(!existsByNombreUsuario(us.getNombreUsua())){
-
+            
+            Rol rol = rolRepository.findById(us.getRol().getId());
+            Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
             Usuario usuario = new Usuario();
             usuario.setNombreUsua(us.getNombreUsua());
             usuario.setContrasena(us.getContrasena());
@@ -44,8 +46,6 @@ public class UsuarioService implements IUsuarioService{
             usuario.setDni(us.getDni());
             usuario.setNumero(us.getNumero());
             usuario.setSexo(us.getSexo());
-            Rol rol = rolRepository.findById(us.getRol().getId());
-            Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
             usuario.setRol(rol);
             usuario.setEstado(estado);
             usuarioRepository.save(usuario);
@@ -61,11 +61,10 @@ public class UsuarioService implements IUsuarioService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
         Estado estado = estadoRepository.findById(2); //1=Activo, 2=Inactivo
-        Usuario user = usuario.get();
+        Usuario user = usuario.orElseThrow();
         user.setEstado(estado);
         usuarioRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado con exito");
-
     }
 
     @Override

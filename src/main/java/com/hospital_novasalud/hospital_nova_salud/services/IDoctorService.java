@@ -12,7 +12,7 @@ public interface IDoctorService {
     List<DoctorDto> findAll();
     List<DoctorDto> findByEspecialidad(Long id);
     ResponseEntity<?> save(Doctor doc);
-    void deleteById(Long id);
+    ResponseEntity<?> deleteById(Long id);
     boolean existsByEspecialidadId(Long id);
     boolean existsByUsuarioId(Long id);
 }

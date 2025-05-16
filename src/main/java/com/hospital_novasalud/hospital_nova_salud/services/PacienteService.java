@@ -1,6 +1,7 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
+import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IPacienteRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
@@ -24,38 +27,54 @@ public class PacienteService implements IPacienteService{
     IUsuarioRepository usuarioRepository;
     @Autowired
     IRolRepository rolRepository;
+    @Autowired
+    IEstadoRepository estadoRepository;
     @Override
     public List<PacienteDto> findAll() {
-        return pacienteRepository.findAll().stream().map(PacienteDto::new).toList();
+        return pacienteRepository.findByUsuario_EstadoId(1).stream().map(PacienteDto::new).toList();
     }
 
     
     @Override
     public ResponseEntity<?> save(Paciente pa) {
-        Usuario usuario = usuarioRepository.findById(pa.getUsuario().getId()).orElse(null);
         Rol rol = rolRepository.findById(4);
-        if(usuario == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro el usuario");
-        }
-
-        if(pa.getId() != null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("");
-        }
-        if(existsByUsuarioId(pa.getUsuario().getId()) ){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El paciente ya existe");
-        }
-        if(rol != usuario.getRol()){
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No es paciente");
-        }
         Paciente paciente = new Paciente();
-        paciente.setUsuario(usuario);
-        pacienteRepository.save(paciente);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Se registro el paciente con exito");
+        Usuario usuario = new Usuario();
+        Estado estado = estadoRepository.findById(1);
+
+        if(!usuarioRepository.existsByDni(pa.getUsuario().getDni())){
+
+            usuario.setDni(pa.getUsuario().getDni());
+            usuario.setContrasena(pa.getUsuario().getContrasena());
+            usuario.setNombre(pa.getUsuario().getNombre());
+            usuario.setNombreUsua(usuario.getDni());
+            usuario.setApellido(pa.getUsuario().getApellido());
+            usuario.setNumero(pa.getUsuario().getNumero());
+            usuario.setSexo(pa.getUsuario().getSexo());
+            usuario.setRol(rol);
+            usuario.setEstado(estado);
+            usuario = usuarioRepository.save(usuario);
+    
+            paciente.setUsuario(usuario);
+            pacienteRepository.save(paciente);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Se registró con exito");
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario ya existe");
+        }
     }
     
     @Override
-    public void deleteById(Long id) {
-        pacienteRepository.deleteById(id);
+    public ResponseEntity<?> deleteById(Long id) {
+        Optional<Paciente> paciente = pacienteRepository.findById(id);
+
+        if (paciente.isEmpty() || paciente.get().getUsuario().getEstado().getId() == 2) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado");
+        }
+        Estado estado = estadoRepository.findById(2); // 1=Activo, 2=Inactivo
+        Paciente recep = paciente.orElseThrow();
+        recep.getUsuario().setEstado(estado);
+        pacienteRepository.save(recep);
+        return ResponseEntity.status(HttpStatus.OK).body("Paciente eliminado con exito");
     }
 
     @Override

@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="recetas_medicas")
@@ -15,15 +17,19 @@ public class RecetaMedica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     @ManyToOne
     @JoinColumn(name="doctor_id", nullable = false)
     private Doctor doctor;
+    @NotNull
     @ManyToOne
     @JoinColumn(name="paciente_id", nullable = false)
     private Paciente paciente;
+    @NotNull
     @ManyToOne
     @JoinColumn(name="medicamento_id", nullable = false)
     private Medicamento medicamento;
+    @NotBlank
     private String mensaje;
     private String fechaCreada;
     public RecetaMedica() {

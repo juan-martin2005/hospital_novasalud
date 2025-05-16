@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="doctores")
@@ -22,12 +23,15 @@ public class Doctor{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "especialidad_id", nullable = false)
-    private Especialidad especialidad;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "especialidad_id", nullable = false)
+    private Especialidad especialidad;
+    @NotNull
     private LocalTime horarioAtencion;
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<RecetaMedica> recetaMedica;

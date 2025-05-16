@@ -11,5 +11,5 @@ public interface IPacienteService {
     List<PacienteDto> findAll();
     boolean existsByUsuarioId(Long id);
     ResponseEntity<?> save(Paciente paciente);
-    void deleteById(Long id);
+    ResponseEntity<?> deleteById(Long id);
 }

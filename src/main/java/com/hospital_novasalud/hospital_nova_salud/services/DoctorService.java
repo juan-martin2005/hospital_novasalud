@@ -1,6 +1,7 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,10 +11,12 @@ import org.springframework.stereotype.Service;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
+import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
 
@@ -28,45 +31,61 @@ public class DoctorService implements IDoctorService{
     IUsuarioRepository usuarioRepository;
     @Autowired
     IRolRepository rolRepository;
+
+    @Autowired
+    IEstadoRepository estadoRepository;
     @Override
     public List<DoctorDto> findAll() {
-        return doctorRepository.findAll().stream().map(DoctorDto::new).toList();
+        return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorDto::new).toList();
     }
 
     @Override
     public ResponseEntity<?> save(Doctor doc) {
-        
         Especialidad especialidad = especialidadRepository.findById(doc.getEspecialidad().getId()).orElse(null);
-        Usuario usuario = usuarioRepository.findById(doc.getUsuario().getId()).orElse(null);
         Rol rol = rolRepository.findById(2);
-        if(especialidad == null || usuario == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro la especialidad o el usuario");
-        }
-
-        if(doc.getId() != null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ya existe un doctor");
-        }
-        if(existsByUsuarioId(doc.getUsuario().getId()) && existsByEspecialidadId(doc.getEspecialidad().getId())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El doctor ya cuenta con esa especialidad");
-        }
-        
-        if(rol != usuario.getRol()){
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No es doctor");
-        }
-        
+        Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
         Doctor doctor = new Doctor();
-        doctor.setUsuario(usuario);
-        doctor.setEspecialidad(especialidad);
-        doctor.setHorarioAtencion(doc.getHorarioAtencion());
-        doctorRepository.save(doctor);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Se registro el doctor con exito");
-        
-        
+        Usuario usuario = new Usuario();
+
+        if(especialidad == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la especialidad");
+        }
+        if(!usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua()) ){
+            
+            usuario.setNombreUsua(doc.getUsuario().getNombreUsua());
+            usuario.setContrasena(doc.getUsuario().getContrasena());
+            usuario.setNombre(doc.getUsuario().getNombre());
+            usuario.setApellido(doc.getUsuario().getApellido());
+            usuario.setDni(doc.getUsuario().getDni());
+            usuario.setNumero(doc.getUsuario().getNumero());
+            usuario.setSexo(doc.getUsuario().getSexo());
+            usuario.setRol(rol);
+            usuario.setEstado(estado);
+            usuario = usuarioRepository.save(usuario);
+    
+            doctor.setUsuario(usuario);
+            doctor.setEspecialidad(especialidad);
+            doctor.setHorarioAtencion(doc.getHorarioAtencion());
+            doctorRepository.save(doctor);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al doctor con exito");
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este doctor ya existe");
+        }
+    
     }
 
     @Override
-    public void deleteById(Long id) {
-        doctorRepository.deleteById(id);
+    public ResponseEntity<?> deleteById(Long id) {
+        Optional<Doctor> doctor = doctorRepository.findById(id);
+        
+        if(doctor.isEmpty() || doctor.get().getUsuario().getEstado().getId() == 2){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor no encontrado");
+        }
+        Estado estado = estadoRepository.findById(2); //1=Activo, 2=Inactivo
+        Doctor doc = doctor.orElseThrow();
+        doc.getUsuario().setEstado(estado);
+        doctorRepository.save(doc);
+        return ResponseEntity.status(HttpStatus.OK).body("Doctor eliminado con exito");
     }
 
     @Override
