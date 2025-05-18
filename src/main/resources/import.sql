@@ -1,7 +1,7 @@
-insert into rol(nombre_rol) values ('Administrador');
-insert into rol(nombre_rol) values ('Doctor');
-insert into rol(nombre_rol) values ('Recepcionista');
-insert into rol(nombre_rol) values ('Paciente');
+insert into rol(nombre_rol) values ('ROL_ADMIN');
+insert into rol(nombre_rol) values ('ROL_DOCTOR');
+insert into rol(nombre_rol) values ('ROL_RECEPCIONISTA');
+insert into rol(nombre_rol) values ('ROL_PACIENTE');
 
 insert into estado(nombre_estado) values ('Activo');
 insert into estado(nombre_estado) values ('Inactivo');
