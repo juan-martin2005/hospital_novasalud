@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.RecepcionistaDto;
@@ -29,6 +30,8 @@ public class RecepcionistaService implements IRecepcionistaService {
     IRolRepository rolRepository;
     @Autowired
     IEstadoRepository estadoRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<RecepcionistaDto> findAll() {
@@ -42,7 +45,7 @@ public class RecepcionistaService implements IRecepcionistaService {
 
     @Override
     public ResponseEntity<?> save(Recepcionista re) {
-        Rol rol = rolRepository.findById(3);
+        Rol rol = rolRepository.findByNombreRol("ROL_RECEPCIONISTA");
         Recepcionista recepcionista = new Recepcionista();
         Usuario usuario = new Usuario();
         Estado estado = estadoRepository.findById(1);
@@ -50,7 +53,7 @@ public class RecepcionistaService implements IRecepcionistaService {
         if (!usuarioRepository.existsByNombreUsua(re.getUsuario().getNombreUsua())) {
 
             usuario.setNombreUsua(re.getUsuario().getNombreUsua());
-            usuario.setContrasena(re.getUsuario().getContrasena());
+            usuario.setContrasena(passwordEncoder.encode(re.getUsuario().getContrasena()));
             usuario.setNombre(re.getUsuario().getNombre());
             usuario.setApellido(re.getUsuario().getApellido());
             usuario.setDni(re.getUsuario().getDni());

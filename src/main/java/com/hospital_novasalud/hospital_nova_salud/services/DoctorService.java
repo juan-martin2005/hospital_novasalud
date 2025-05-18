@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
@@ -31,9 +32,11 @@ public class DoctorService implements IDoctorService{
     IUsuarioRepository usuarioRepository;
     @Autowired
     IRolRepository rolRepository;
-
     @Autowired
     IEstadoRepository estadoRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public List<DoctorDto> findAll() {
         return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorDto::new).toList();
@@ -42,7 +45,7 @@ public class DoctorService implements IDoctorService{
     @Override
     public ResponseEntity<?> save(Doctor doc) {
         Especialidad especialidad = especialidadRepository.findById(doc.getEspecialidad().getId()).orElse(null);
-        Rol rol = rolRepository.findById(2);
+        Rol rol = rolRepository.findByNombreRol("ROL_DOCTOR");
         Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
         Doctor doctor = new Doctor();
         Usuario usuario = new Usuario();
@@ -53,7 +56,7 @@ public class DoctorService implements IDoctorService{
         if(!usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua()) ){
             
             usuario.setNombreUsua(doc.getUsuario().getNombreUsua());
-            usuario.setContrasena(doc.getUsuario().getContrasena());
+            usuario.setContrasena(passwordEncoder.encode(doc.getUsuario().getContrasena()));
             usuario.setNombre(doc.getUsuario().getNombre());
             usuario.setApellido(doc.getUsuario().getApellido());
             usuario.setDni(doc.getUsuario().getDni());

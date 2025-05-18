@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.UsuarioDto;
@@ -25,7 +26,8 @@ public class UsuarioService implements IUsuarioService{
     IRolRepository rolRepository;
     @Autowired
     IEstadoRepository estadoRepository;
-    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public List<UsuarioDto> findAll() {
         return usuarioRepository.findAllByEstadoId(1).stream().map(UsuarioDto::new).toList();
@@ -35,12 +37,11 @@ public class UsuarioService implements IUsuarioService{
     public ResponseEntity<?> save(Usuario us) {
         
         if(!existsByNombreUsuario(us.getNombreUsua())){
-            
-            Rol rol = rolRepository.findById(us.getRol().getId());
+            Rol rol = rolRepository.findByNombreRol(us.getRol().getNombreRol());
             Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
             Usuario usuario = new Usuario();
             usuario.setNombreUsua(us.getNombreUsua());
-            usuario.setContrasena(us.getContrasena());
+            usuario.setContrasena(passwordEncoder.encode(us.getContrasena()));
             usuario.setNombre(us.getNombre());
             usuario.setApellido(us.getApellido());
             usuario.setDni(us.getDni());
