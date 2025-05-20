@@ -26,9 +26,6 @@ public class Usuario {
     @NotBlank
     private String apellido;
     @NotBlank
-    @Size(min=7, max=8)
-    private String dni;
-    @NotBlank
     @Size(min=9, max=9)
     private String numero;
     @NotNull
@@ -44,14 +41,13 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String nombreUsua, String contrasena, String nombre, String apellido, String dni,
+    public Usuario(Long id, String nombreUsua, String contrasena, String nombre, String apellido,
             String numero, Character sexo, Rol rol, Estado estado) {
         this.id = id;
         this.nombreUsua = nombreUsua;
         this.contrasena = contrasena;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.dni = dni;
         this.numero = numero;
         this.sexo = sexo;
         this.rol = rol;
@@ -97,14 +93,6 @@ public class Usuario {
 
     public void setApellido(String apellido) {
         this.apellido = apellido;
-    }
-
-    public String getDni() {
-        return dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
     }
 
     public String getNumero() {
