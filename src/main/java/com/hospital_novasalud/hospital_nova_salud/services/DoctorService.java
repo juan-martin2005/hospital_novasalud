@@ -59,7 +59,6 @@ public class DoctorService implements IDoctorService{
             usuario.setContrasena(passwordEncoder.encode(doc.getUsuario().getContrasena()));
             usuario.setNombre(doc.getUsuario().getNombre());
             usuario.setApellido(doc.getUsuario().getApellido());
-            usuario.setDni(doc.getUsuario().getDni());
             usuario.setNumero(doc.getUsuario().getNumero());
             usuario.setSexo(doc.getUsuario().getSexo());
             usuario.setRol(rol);

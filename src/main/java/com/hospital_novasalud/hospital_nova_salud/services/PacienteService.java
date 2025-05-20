@@ -45,12 +45,12 @@ public class PacienteService implements IPacienteService{
         Usuario usuario = new Usuario();
         Estado estado = estadoRepository.findById(1);
 
-        if(!usuarioRepository.existsByDni(pa.getUsuario().getDni())){
+        if(!pacienteRepository.existsByDni(pa.getDni())){
 
-            usuario.setDni(pa.getUsuario().getDni());
+            paciente.setDni(pa.getDni());
             usuario.setContrasena(passwordEncoder.encode(pa.getUsuario().getContrasena()));
             usuario.setNombre(pa.getUsuario().getNombre());
-            usuario.setNombreUsua(usuario.getDni());
+            usuario.setNombreUsua(paciente.getDni());
             usuario.setApellido(pa.getUsuario().getApellido());
             usuario.setNumero(pa.getUsuario().getNumero());
             usuario.setSexo(pa.getUsuario().getSexo());
@@ -62,7 +62,7 @@ public class PacienteService implements IPacienteService{
             pacienteRepository.save(paciente);
             return ResponseEntity.status(HttpStatus.CREATED).body("Se registró con exito");
         }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario ya existe");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El paciente ya existe en el sistema");
         }
     }
     

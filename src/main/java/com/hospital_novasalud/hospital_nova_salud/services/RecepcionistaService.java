@@ -56,7 +56,6 @@ public class RecepcionistaService implements IRecepcionistaService {
             usuario.setContrasena(passwordEncoder.encode(re.getUsuario().getContrasena()));
             usuario.setNombre(re.getUsuario().getNombre());
             usuario.setApellido(re.getUsuario().getApellido());
-            usuario.setDni(re.getUsuario().getDni());
             usuario.setNumero(re.getUsuario().getNumero());
             usuario.setSexo(re.getUsuario().getSexo());
             usuario.setRol(rol);
