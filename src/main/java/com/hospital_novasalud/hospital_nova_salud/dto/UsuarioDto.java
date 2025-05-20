@@ -4,7 +4,6 @@ import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 
 public class UsuarioDto {
 
-    private final String dni;
     private final String nombreUsua;
     private final String nombre;
     private final String apellido;
@@ -16,14 +15,9 @@ public class UsuarioDto {
         this.nombreUsua = usuario.getNombreUsua();
         this.nombre = usuario.getNombre();
         this.apellido = usuario.getApellido();
-        this.dni = usuario.getDni();
         this.numero = usuario.getNumero();
         this.sexo = usuario.getSexo();
         this.rol = usuario.getRol().getNombreRol();
-    }
-
-    public String getDni() {
-        return dni;
     }
 
     public String getNombreUsua() {
