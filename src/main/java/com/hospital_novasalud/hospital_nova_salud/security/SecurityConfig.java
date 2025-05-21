@@ -36,7 +36,7 @@ public class SecurityConfig {
             .requestMatchers("/api/recepcionista/**").hasAuthority("ROL_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/paciente/eliminar/{id}").hasAuthority("ROL_ADMIN")
             .requestMatchers(HttpMethod.GET, "/api/paciente/listar").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/paciente/registrar").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/paciente/registrar").anonymous()
             //Aun no realizadas
             .requestMatchers(HttpMethod.GET, "/api/cita-medica/listar").hasAuthority("ROL_PACIENTE")
             .requestMatchers(HttpMethod.POST, "/api/cita-medica/registrar").hasAuthority("ROL_PACIENTE")
