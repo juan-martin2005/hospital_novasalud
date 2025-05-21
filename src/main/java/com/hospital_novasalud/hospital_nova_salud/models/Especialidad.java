@@ -20,8 +20,7 @@ public class Especialidad {
     @OneToMany(mappedBy = "especialidad")
     private List<Doctor> doctor;
     
-    public Especialidad(Long id, String nombre, String descripcion, List<Doctor> doctor) {
-        this.id = id;
+    public Especialidad(String nombre, String descripcion, List<Doctor> doctor) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.doctor = doctor;

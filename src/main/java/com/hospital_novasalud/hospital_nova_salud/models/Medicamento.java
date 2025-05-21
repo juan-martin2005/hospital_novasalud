@@ -1,12 +1,14 @@
 package com.hospital_novasalud.hospital_nova_salud.models;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="medicamentos")
@@ -14,11 +16,17 @@ public class Medicamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
     private String nombre;
+    @NotBlank
     private String descripcion;
-    private Date fechaIngreso;
-    private Date fechaVencimiento;
+    @NotNull
+    private LocalDate fechaIngreso;
+    @NotNull
+    private LocalDate fechaVencimiento;
+    @NotBlank
     private int cantidad;
+    @NotNull
     private Double precioUnitario;
 
     public Medicamento(){
@@ -42,16 +50,16 @@ public class Medicamento {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    public Date getFechaIngreso() {
+    public LocalDate getFechaIngreso() {
         return fechaIngreso;
     }
-    public void setFechaIngreso(Date fechaIngreso) {
+    public void setFechaIngreso(LocalDate fechaIngreso) {
         this.fechaIngreso = fechaIngreso;
     }
-    public Date getFechaVencimiento() {
+    public LocalDate getFechaVencimiento() {
         return fechaVencimiento;
     }
-    public void setFechaVencimiento(Date fechaVencimiento) {
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
     public int getCantidad() {

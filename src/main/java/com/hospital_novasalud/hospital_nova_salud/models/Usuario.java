@@ -41,9 +41,8 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String nombreUsua, String contrasena, String nombre, String apellido,
+    public Usuario(String nombreUsua, String contrasena, String nombre, String apellido,
             String numero, Character sexo, Rol rol, Estado estado) {
-        this.id = id;
         this.nombreUsua = nombreUsua;
         this.contrasena = contrasena;
         this.nombre = nombre;

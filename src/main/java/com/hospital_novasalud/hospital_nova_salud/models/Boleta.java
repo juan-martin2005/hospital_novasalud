@@ -8,25 +8,29 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Boleta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+    @NotNull
     private LocalDateTime fecha;
+    @NotNull
     private Double monto;
     public Boleta(){
 
     }
-    public Boleta(Long id, Paciente paciente, Doctor doctor, LocalDateTime fecha, Double monto) {
-        this.id = id;
+    public Boleta(Paciente paciente, Doctor doctor, LocalDateTime fecha, Double monto) {
         this.paciente = paciente;
         this.doctor = doctor;
         this.fecha = fecha;

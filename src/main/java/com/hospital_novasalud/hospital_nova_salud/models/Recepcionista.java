@@ -22,8 +22,7 @@ public class Recepcionista {
 
     public Recepcionista() {
     }
-    public Recepcionista(Long id, Usuario usuario) {
-        this.id = id;
+    public Recepcionista(Usuario usuario) {
         this.usuario = usuario;
     }
     public Long getId() {

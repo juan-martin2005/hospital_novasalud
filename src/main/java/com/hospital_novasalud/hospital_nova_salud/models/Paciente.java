@@ -27,8 +27,7 @@ public class Paciente {
     
     public Paciente() {
     }
-    public Paciente(Long id, String dni, Usuario usuario) {
-        this.id = id;
+    public Paciente(String dni, Usuario usuario) {
         this.dni = dni;
         this.usuario = usuario;
     }

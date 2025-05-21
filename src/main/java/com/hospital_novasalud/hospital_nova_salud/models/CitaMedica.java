@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="citas_medicas")
@@ -17,19 +18,22 @@ public class CitaMedica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+    @NotNull
     private LocalDate fechaCita;
+    @NotNull
     private LocalTime horaCita;
 
     public CitaMedica() {
     }
-    public CitaMedica(Long id, Paciente paciente, Doctor doctor, LocalDate fechaCita, LocalTime horaCita) {
-        this.id = id;
+    public CitaMedica(Paciente paciente, Doctor doctor, LocalDate fechaCita, LocalTime horaCita) {
         this.paciente = paciente;
         this.doctor = doctor;
         this.fechaCita = fechaCita;

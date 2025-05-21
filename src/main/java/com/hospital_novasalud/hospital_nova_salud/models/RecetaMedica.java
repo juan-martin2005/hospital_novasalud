@@ -1,6 +1,8 @@
 package com.hospital_novasalud.hospital_nova_salud.models;
 
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,13 +33,13 @@ public class RecetaMedica {
     private Medicamento medicamento;
     @NotBlank
     private String mensaje;
-    private String fechaCreada;
+    @NotNull
+    private LocalDateTime fechaCreada;
     public RecetaMedica() {
     }
     
-    public RecetaMedica(Long id, Doctor doctor, Paciente paciente, Medicamento medicamento, String mensaje,
-            String fechaCreada) {
-        this.id = id;
+    public RecetaMedica(Doctor doctor, Paciente paciente, Medicamento medicamento, String mensaje,
+            LocalDateTime fechaCreada) {
         this.doctor = doctor;
         this.paciente = paciente;
         this.medicamento = medicamento;
@@ -85,11 +87,11 @@ public class RecetaMedica {
         this.mensaje = mensaje;
     }
 
-    public String getFechaCreada() {
+    public LocalDateTime getFechaCreada() {
         return fechaCreada;
     }
 
-    public void setFechaCreada(String fechaCreada) {
+    public void setFechaCreada(LocalDateTime fechaCreada) {
         this.fechaCreada = fechaCreada;
     }
 
