@@ -36,21 +36,25 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public ResponseEntity<?> save(Usuario us) {
         
-        if(!existsByNombreUsuario(us.getNombreUsua())){
-            Rol rol = rolRepository.findByNombreRol(us.getRol().getNombreRol());
-            Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
-            Usuario usuario = new Usuario();
-            usuario.setNombreUsua(us.getNombreUsua());
-            usuario.setContrasena(passwordEncoder.encode(us.getContrasena()));
-            usuario.setNombre(us.getNombre());
-            usuario.setApellido(us.getApellido());
-            usuario.setNumero(us.getNumero());
-            usuario.setSexo(us.getSexo());
-            usuario.setRol(rol);
-            usuario.setEstado(estado);
-            usuarioRepository.save(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado con exito");
-        }else return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe");
+        Rol rol = rolRepository.findByNombreRol(us.getRol().getNombreRol());
+        Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
+        Usuario usuario = new Usuario();
+        if(!rolRepository.existsByNombreRol(us.getRol().getNombreRol())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El rol no existe");
+        }
+        if(existsByNombreUsuario(us.getNombreUsua())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe");
+        }
+        usuario.setNombreUsua(us.getNombreUsua());
+        usuario.setContrasena(passwordEncoder.encode(us.getContrasena()));
+        usuario.setNombre(us.getNombre());
+        usuario.setApellido(us.getApellido());
+        usuario.setNumero(us.getNumero());
+        usuario.setSexo(us.getSexo());
+        usuario.setRol(rol);
+        usuario.setEstado(estado);
+        usuarioRepository.save(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado con exito");
         
     }
 
