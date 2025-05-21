@@ -18,7 +18,7 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    @Size(min=7, max=8)
+    @Size(min=8, max=8)
     private String dni;
     @NotNull
     @ManyToOne
