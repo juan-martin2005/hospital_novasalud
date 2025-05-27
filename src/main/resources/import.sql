@@ -16,3 +16,5 @@ insert into especialidades (nombre, descripcion) values ('Ortopedia', 'Tratamien
 insert into especialidades (nombre, descripcion) values ('Psiquiatría', 'Diagnóstico y tratamiento de trastornos mentales y emocionales.');
 insert into especialidades (nombre, descripcion) values ('Endocrinología', 'Estudio de las glándulas endocrinas y trastornos hormonales.');
 insert into especialidades (nombre, descripcion) values ('Urología', 'Tratamiento de enfermedades del sistema urinario y reproductor masculino.');
+-- Admin de prueba
+insert into usuarios(estado_id, rol_id, sexo, numero, apellido, contrasena, nombre, nombre_usua) values (1, 1, 'M', '924102235', 'Anonymus','$2a$10$bR4qy1aE8DQN5pMI8sCBuu9mTkGqQrAPttlN6iNygDXb1R/jAiF2G','Admin', 'ADMIN');
