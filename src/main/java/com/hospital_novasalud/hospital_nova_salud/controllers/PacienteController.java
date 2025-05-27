@@ -29,12 +29,12 @@ public class PacienteController {
     IPacienteService pacienteService;
 
     @GetMapping("/listar")
-    public List<PacienteDto> listarRecepcionistas() {
+    public List<PacienteDto> listarPaciente() {
         return pacienteService.findAll();
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarRecepcionista(@Valid @RequestBody Paciente paciente, BindingResult result) {
+    public ResponseEntity<?> registrarPaciente(@Valid @RequestBody Paciente paciente, BindingResult result) {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
@@ -42,7 +42,7 @@ public class PacienteController {
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+    public ResponseEntity<?> eliminarPaciente(@PathVariable Long id) {
         return pacienteService.deleteById(id);
     }
 
