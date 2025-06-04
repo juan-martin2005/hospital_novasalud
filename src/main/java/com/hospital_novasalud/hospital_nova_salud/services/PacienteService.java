@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +21,13 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepositor
 public class PacienteService implements IPacienteService{
 
     @Autowired
-    IPacienteRepository pacienteRepository;
+    private IPacienteRepository pacienteRepository;
     @Autowired
-    IUsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
     @Autowired
-    IRolRepository rolRepository;
+    private IRolRepository rolRepository;
     @Autowired
-    IEstadoRepository estadoRepository;
+    private IEstadoRepository estadoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Override
@@ -39,14 +37,14 @@ public class PacienteService implements IPacienteService{
 
     
     @Override
-    public ResponseEntity<?> save(Paciente pa) {
+    public boolean save(Paciente pa) {
+        boolean existe = pacienteRepository.existsByDni(pa.getDni());
         Rol rol = rolRepository.findByNombreRol("ROL_PACIENTE");
+        Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Paciente paciente = new Paciente();
         Usuario usuario = new Usuario();
-        Estado estado = estadoRepository.findById(1);
 
-        if(!pacienteRepository.existsByDni(pa.getDni())){
-
+        if(!existe){
             paciente.setDni(pa.getDni());
             usuario.setContrasena(passwordEncoder.encode(pa.getUsuario().getContrasena()));
             usuario.setNombre(pa.getUsuario().getNombre());
@@ -54,35 +52,27 @@ public class PacienteService implements IPacienteService{
             usuario.setApellido(pa.getUsuario().getApellido());
             usuario.setNumero(pa.getUsuario().getNumero());
             usuario.setSexo(pa.getUsuario().getSexo());
+            usuario.setEstado(estadoActivo);
             usuario.setRol(rol);
-            usuario.setEstado(estado);
             usuario = usuarioRepository.save(usuario);
     
             paciente.setUsuario(usuario);
             pacienteRepository.save(paciente);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Se registró con exito");
-        }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El paciente ya existe en el sistema");
         }
+        return existe;
     }
-    
     @Override
-    public ResponseEntity<?> deleteById(Long id) {
+    public void deleteById(Long id) {
         Optional<Paciente> paciente = pacienteRepository.findById(id);
-
-        if (paciente.isEmpty() || paciente.get().getUsuario().getEstado().getId() == 2) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado");
-        }
-        Estado estado = estadoRepository.findById(2); // 1=Activo, 2=Inactivo
-        Paciente recep = paciente.orElseThrow();
-        recep.getUsuario().setEstado(estado);
-        pacienteRepository.save(recep);
-        return ResponseEntity.status(HttpStatus.OK).body("Paciente eliminado con exito");
+        Estado estado = estadoRepository.findById(2).orElseThrow(); //1=Activo, 2=Inactivo
+        Paciente pac = paciente.orElseThrow();
+        pac.getUsuario().setEstado(estado);
+        pacienteRepository.save(pac);
     }
+
 
     @Override
-    public boolean existsByUsuarioId(Long id) {
-        return pacienteRepository.existsByUsuarioId(id);
+    public Optional<Paciente> findPacienteById(Long id) {
+        return pacienteRepository.findById(id);
     }
-
 }

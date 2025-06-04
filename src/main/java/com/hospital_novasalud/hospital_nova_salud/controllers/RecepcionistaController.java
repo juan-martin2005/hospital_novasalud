@@ -3,8 +3,10 @@ package com.hospital_novasalud.hospital_nova_salud.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,13 +38,24 @@ public class RecepcionistaController {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
-        return recepcionistaService.save(recepcionista);
+        boolean existe = recepcionistaService.save(recepcionista);
+        if(!existe) return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al recepcionista con exito");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este recepcionista ya existe");
+        
     }
     
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
-        return recepcionistaService.deleteById(id);
+
+        Optional<Recepcionista> recepcionista = recepcionistaService.findRecepcionistaById(id);
+        if (recepcionista.isEmpty() || recepcionista.get().getUsuario().getEstado().getId() == 2) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recepcionista no encontrado");
+        }
+
+        recepcionistaService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Recepcionista eliminado con exito");
     }
+
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(

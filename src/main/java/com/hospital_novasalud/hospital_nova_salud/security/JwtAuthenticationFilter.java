@@ -25,15 +25,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import static com.hospital_novasalud.hospital_nova_salud.security.TokenJwtConfig.*;
 
-public class JwtAtuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
     private AuthenticationManager authenticationManager;
 
-
-    public JwtAtuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
-
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -72,16 +70,16 @@ public class JwtAtuthenticationFilter extends UsernamePasswordAuthenticationFilt
                 .subject(nombreUsuario)
                 .claims(claims)
                 .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora de validez
                 .signWith(SECRET_KEY)
                 .compact();
         response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
-
         Map<String, String> body = new HashMap<>();
         body.put("usuario", nombreUsuario);
         body.put("token", token);
         body.put("rol", rol);
         body.put("mensaje", "Se ha iniciado sesion correctamente");
-
+        
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setContentType(CONTENT_TYPE);
         response.setStatus(200);

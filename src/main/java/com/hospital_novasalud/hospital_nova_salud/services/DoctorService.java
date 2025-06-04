@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +23,15 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepositor
 public class DoctorService implements IDoctorService{
 
     @Autowired
-    IDoctorRepository doctorRepository;
+    private IDoctorRepository doctorRepository;
     @Autowired
-    IEspecialidadRepository especialidadRepository;
+    private IEspecialidadRepository especialidadRepository;
     @Autowired
-    IUsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
     @Autowired
-    IRolRepository rolRepository;
+    private IRolRepository rolRepository;
     @Autowired
-    IEstadoRepository estadoRepository;
+    private IEstadoRepository estadoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -41,53 +39,41 @@ public class DoctorService implements IDoctorService{
     public List<DoctorDto> findAll() {
         return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorDto::new).toList();
     }
-
     @Override
-    public ResponseEntity<?> save(Doctor doc) {
-        Especialidad especialidad = especialidadRepository.findById(doc.getEspecialidad().getId()).orElse(null);
+    public boolean save(Doctor doc) {
+        boolean existe = usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua());
+        Especialidad especialidad = findEspecialidad(doc);
         Rol rol = rolRepository.findByNombreRol("ROL_DOCTOR");
-        Estado estado = estadoRepository.findById(1); //1=Activo, 2=Inactivo       
+        Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Doctor doctor = new Doctor();
         Usuario usuario = new Usuario();
 
-        if(especialidad == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la especialidad");
-        }
-        if(!usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua()) ){
-            
+        if(!existe){
             usuario.setNombreUsua(doc.getUsuario().getNombreUsua());
             usuario.setContrasena(passwordEncoder.encode(doc.getUsuario().getContrasena()));
             usuario.setNombre(doc.getUsuario().getNombre());
             usuario.setApellido(doc.getUsuario().getApellido());
             usuario.setNumero(doc.getUsuario().getNumero());
             usuario.setSexo(doc.getUsuario().getSexo());
+            usuario.setEstado(estadoActivo);
             usuario.setRol(rol);
-            usuario.setEstado(estado);
             usuario = usuarioRepository.save(usuario);
     
             doctor.setUsuario(usuario);
             doctor.setEspecialidad(especialidad);
             doctor.setHorarioAtencion(doc.getHorarioAtencion());
             doctorRepository.save(doctor);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al doctor con exito");
-        }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este doctor ya existe");
         }
-    
+        return existe;
     }
 
     @Override
-    public ResponseEntity<?> deleteById(Long id) {
+    public void deleteById(Long id) {
         Optional<Doctor> doctor = doctorRepository.findById(id);
-        
-        if(doctor.isEmpty() || doctor.get().getUsuario().getEstado().getId() == 2){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor no encontrado");
-        }
-        Estado estado = estadoRepository.findById(2); //1=Activo, 2=Inactivo
+        Estado estado = estadoRepository.findById(2).orElseThrow(); //1=Activo, 2=Inactivo
         Doctor doc = doctor.orElseThrow();
         doc.getUsuario().setEstado(estado);
         doctorRepository.save(doc);
-        return ResponseEntity.status(HttpStatus.OK).body("Doctor eliminado con exito");
     }
 
     @Override
@@ -104,5 +90,13 @@ public class DoctorService implements IDoctorService{
     public List<DoctorDto> findByEspecialidad(Long id) {  
         return doctorRepository.findByEspecialidadId(id).stream().map(DoctorDto::new).toList();
     }
+    @Override
+    public Especialidad findEspecialidad(Doctor doc){
+        return especialidadRepository.findById(doc.getEspecialidad().getId()).orElse(null);
+    }
 
+    @Override
+    public Optional<Doctor> findDoctorById(Long id) {
+        return doctorRepository.findById(id);
+    }
 }

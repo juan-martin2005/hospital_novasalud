@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +21,13 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepositor
 public class RecepcionistaService implements IRecepcionistaService {
 
     @Autowired
-    IRecepcionistaRepository recepcionistaRepository;
+    private IRecepcionistaRepository recepcionistaRepository;
     @Autowired
-    IUsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
     @Autowired
-    IRolRepository rolRepository;
+    private IRolRepository rolRepository;
     @Autowired
-    IEstadoRepository estadoRepository;
+    private IEstadoRepository estadoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -44,50 +42,47 @@ public class RecepcionistaService implements IRecepcionistaService {
     }
 
     @Override
-    public ResponseEntity<?> save(Recepcionista re) {
+    public boolean save(Recepcionista re) {
+        boolean existe = usuarioRepository.existsByNombreUsua(re.getUsuario().getNombreUsua());
         Rol rol = rolRepository.findByNombreRol("ROL_RECEPCIONISTA");
+        Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Recepcionista recepcionista = new Recepcionista();
         Usuario usuario = new Usuario();
-        Estado estado = estadoRepository.findById(1);
 
-        if (!usuarioRepository.existsByNombreUsua(re.getUsuario().getNombreUsua())) {
-
+        if (!existe) {
             usuario.setNombreUsua(re.getUsuario().getNombreUsua());
             usuario.setContrasena(passwordEncoder.encode(re.getUsuario().getContrasena()));
             usuario.setNombre(re.getUsuario().getNombre());
             usuario.setApellido(re.getUsuario().getApellido());
             usuario.setNumero(re.getUsuario().getNumero());
             usuario.setSexo(re.getUsuario().getSexo());
+            usuario.setEstado(estadoActivo);
             usuario.setRol(rol);
-            usuario.setEstado(estado);
             usuario = usuarioRepository.save(usuario);
 
             recepcionista.setUsuario(usuario);
             recepcionistaRepository.save(recepcionista);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al recepcionista con exito");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este recepcionista ya existe");
-        }
-
+        } 
+        return existe;
     }
-
+    
+    @Override
+    public void deleteById(Long id) {
+        Optional<Recepcionista> recepcionista = recepcionistaRepository.findById(id);
+        Estado estado = estadoRepository.findById(2).orElseThrow(); // 1=Activo, 2=Inactivo
+        Recepcionista recep = recepcionista.orElseThrow();
+        recep.getUsuario().setEstado(estado);
+        recepcionistaRepository.save(recep);
+    }
+    
     @Override
     public boolean existsByUsuarioId(Long id) {
         return recepcionistaRepository.existsByUsuarioId(id);
     }
 
     @Override
-    public ResponseEntity<?> deleteById(Long id) {
-        Optional<Recepcionista> recepcionista = recepcionistaRepository.findById(id);
-
-        if (recepcionista.isEmpty() || recepcionista.get().getUsuario().getEstado().getId() == 2) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recepcionista no encontrado");
-        }
-        Estado estado = estadoRepository.findById(2); // 1=Activo, 2=Inactivo
-        Recepcionista recep = recepcionista.orElseThrow();
-        recep.getUsuario().setEstado(estado);
-        recepcionistaRepository.save(recep);
-        return ResponseEntity.status(HttpStatus.OK).body("Recepcionista eliminado con exito");
+    public Optional<Recepcionista> findRecepcionistaById(Long id) {
+        return recepcionistaRepository.findById(id);
     }
-
+    
 }
