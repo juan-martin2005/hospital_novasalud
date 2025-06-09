@@ -3,6 +3,7 @@ package com.hospital_novasalud.hospital_nova_salud.models;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,7 +19,6 @@ public class CitaMedica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
@@ -29,6 +29,7 @@ public class CitaMedica {
     @NotNull
     private LocalDate fechaCita;
     @NotNull
+    @Column(columnDefinition = "TIME(0)")
     private LocalTime horaCita;
 
     public CitaMedica() {

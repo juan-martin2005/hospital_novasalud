@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +32,7 @@ public class Doctor{
     @JoinColumn(name = "especialidad_id", nullable = false)
     private Especialidad especialidad;
     @NotNull
+    @Column(columnDefinition = "TIME(0)")
     private LocalTime horarioAtencion;
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private Set<RecetaMedica> recetaMedica;
