@@ -13,8 +13,8 @@ public class CitaMedicaDto {
     private final LocalTime horaCita;
 
     public CitaMedicaDto(CitaMedica cita) {
-        this.paciente = cita.getPaciente().getUsuario().getNombreUsua();
-        this.doctor = cita.getDoctor().getUsuario().getNombreUsua();
+        this.paciente = cita.getPaciente().getUsuario().getNombre();
+        this.doctor = "Dr. " + cita.getDoctor().getUsuario().getNombre();
         this.fechaCita = cita.getFechaCita();
         this.horaCita = cita.getHoraCita();
     }

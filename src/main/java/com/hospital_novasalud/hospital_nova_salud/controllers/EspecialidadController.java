@@ -1,14 +1,25 @@
 package com.hospital_novasalud.hospital_nova_salud.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.EspecialidadDto;
+import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.services.IEspecialidadesService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/especialidades")
@@ -20,5 +31,28 @@ public class EspecialidadController {
     @GetMapping("/listar")
     public List<EspecialidadDto> listarEspecialidades() {
         return especialidadesService.findAll();
+    }
+    @PostMapping("/registrar")
+    public ResponseEntity<?> registrarEspecialidad(@Valid @RequestBody Especialidad especialidad, BindingResult result) {
+        if(result.hasFieldErrors()) {
+            return validation(result);
+        }
+        boolean existe = especialidadesService.save(especialidad);
+        if (!existe) return ResponseEntity.ok("Especialidad registrada correctamente");
+        return ResponseEntity.badRequest().body("La especialidad ya existe");
+    }
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarEspecialidad(@PathVariable Long id) {
+        especialidadesService.deleteById(id);
+        return ResponseEntity.ok("Especialidad eliminada correctamente");
+    }
+
+    private ResponseEntity<?> validation(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(
+            err -> errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage())
+        );
+        return ResponseEntity.badRequest().body(errors);
     }
 }

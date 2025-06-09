@@ -22,14 +22,19 @@ public class EspecialidadesService implements IEspecialidadesService{
 
     @Override
     public boolean save(Especialidad especialidad) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        boolean existe = especialidadRepository.existsByNombre(especialidad.getNombre());
+        if(!existe){
+            especialidadRepository.save(especialidad);
+        }
+        return existe;
     }
 
     @Override
     public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+        boolean existe = especialidadRepository.existsById(id);
+        if(existe){
+            especialidadRepository.deleteById(id);
+        }
     }
 
 }
