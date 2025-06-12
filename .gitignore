@@ -31,4 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-
+./hospital-nova-salud/mvnw
+./hospital-nova-salud/mvnw.cmd
