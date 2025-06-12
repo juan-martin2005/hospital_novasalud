@@ -36,7 +36,6 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("hospitalnovasalud-cwgzh7enhgfrfsfc.ukwest-01.azurewebsites.net").permitAll()
             .requestMatchers("/api/usuarios/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/doctor/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/recepcionista/**").hasAuthority("ROL_ADMIN")
