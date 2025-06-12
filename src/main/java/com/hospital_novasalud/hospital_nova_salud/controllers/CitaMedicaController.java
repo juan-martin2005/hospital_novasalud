@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaDto;
 import com.hospital_novasalud.hospital_nova_salud.models.CitaMedica;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
 import com.hospital_novasalud.hospital_nova_salud.services.ICitaMedicaService;
 
 import jakarta.validation.Valid;
@@ -35,9 +36,23 @@ public class CitaMedicaController {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
-        boolean citaDisponible = citaMedicaService.save(citaMedica);
-        if(citaDisponible) return ResponseEntity.ok("Cita médica registrada correctamente");
-        return ResponseEntity.badRequest().body("Doctor o Horario no disponible, elija otro horario");
+        ValidacionHorario citaDisponible = citaMedicaService.save(citaMedica);
+        switch (citaDisponible) {
+            case OK:
+                return ResponseEntity.ok("Cita médica registrada correctamente");   
+            case FECHA_INVALIDA:
+                return ResponseEntity.badRequest().body("Fecha ingresada es inválido");   
+            case HORARIO_INVALIDO:
+                return ResponseEntity.badRequest().body("Hora ingresada es inválido");   
+            case HORARIO_NO_DISPONIBLE:
+                return ResponseEntity.badRequest().body("Horario no disponible");
+            case HORARIO_EN_USO:
+                return ResponseEntity.badRequest().body("Horario para esta cita no se encuentra disponible");   
+            case ERROR:
+                return ResponseEntity.badRequest().body("Doctor no se encontró");
+            default:
+                return ResponseEntity.internalServerError().body("Ocurrio un error");
+        }
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

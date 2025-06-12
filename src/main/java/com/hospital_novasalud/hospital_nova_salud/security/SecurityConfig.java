@@ -36,20 +36,21 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/usuarios/**").hasAuthority("ROL_ADMIN")
+            .requestMatchers(HttpMethod.POST, "/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/doctor/agregar-horario").hasAuthority("ROL_DOCTOR")
+            .requestMatchers(HttpMethod.POST, "/api/paciente/registrar").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/cita-medica/guardar").hasAuthority("ROL_PACIENTE")
+            .requestMatchers(HttpMethod.GET, "/api/cita-medica/listar").hasAuthority("ROL_PACIENTE")
+            .requestMatchers(HttpMethod.GET, "/api/especialidades/listar").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/paciente/listar").hasAnyAuthority( "ROL_DOCTOR", "ROL_RECEPCIONISTA")
+            
+            // .requestMatchers(HttpMethod.PUT, "/api/cita-medica/modificar/{id}").hasAuthority("ROL_PACIENTE")
+            // .requestMatchers(HttpMethod.DELETE, "/api/cita-medica/eliminar/{id}").hasAuthority("ROL_PACIENTE")
             .requestMatchers("/api/doctor/**").hasAuthority("ROL_ADMIN")
+            .requestMatchers("/api/usuarios/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/recepcionista/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/especialidades/**").hasAuthority("ROL_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/paciente/eliminar/{id}").hasAuthority("ROL_ADMIN")
-            .requestMatchers(HttpMethod.GET, "/api/paciente/listar").hasAnyAuthority( "ROL_DOCTOR", "ROL_RECEPCIONISTA")
-            .requestMatchers(HttpMethod.POST, "/api/paciente/registrar").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/especialidades/listar").permitAll()
-            .requestMatchers(HttpMethod.POST, "/login").permitAll()
-
-            .requestMatchers(HttpMethod.GET, "/api/cita-medica/listar").hasAuthority("ROL_PACIENTE")
-            .requestMatchers(HttpMethod.POST, "/api/cita-medica/guardar").hasAuthority("ROL_PACIENTE")
-            // .requestMatchers(HttpMethod.PUT, "/api/cita-medica/modificar/{id}").hasAuthority("ROL_PACIENTE")
-            // .requestMatchers(HttpMethod.DELETE, "/api/cita-medica/eliminar/{id}").hasAuthority("ROL_PACIENTE")
             .anyRequest().authenticated())
             .addFilter(new JwtAuthenticationFilter(authenticationManager()))
             .addFilter(new JwtValidationFilter(authenticationManager()))

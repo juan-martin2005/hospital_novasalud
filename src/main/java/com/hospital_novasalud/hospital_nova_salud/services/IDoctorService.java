@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
+import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
 
 public interface IDoctorService {
 
@@ -13,6 +15,7 @@ public interface IDoctorService {
     List<DoctorDto> findByEspecialidad(Long id);
     Optional<Doctor> findDoctorById(Long id);
     boolean save(Doctor doc);
+    ValidacionHorario updateHorario(HorarioDoctor horarioDoctor);
     void deleteById(Long id);
     boolean existsByEspecialidadId(Long id);
     boolean existsByUsuarioId(Long id);

@@ -1,7 +1,5 @@
 package com.hospital_novasalud.hospital_nova_salud.dto;
 
-import java.time.LocalTime;
-
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 
 public class DoctorDto {
@@ -10,7 +8,7 @@ public class DoctorDto {
     private final String numero;
     private final char sexo;
     private final String especialidad;
-    private final LocalTime horarioAtencion;
+
 
     public DoctorDto(Doctor doc){
         this.nombre = doc.getUsuario().getNombre();
@@ -18,7 +16,6 @@ public class DoctorDto {
         this.numero = doc.getUsuario().getNumero();
         this.sexo = doc.getUsuario().getSexo();
         this.especialidad = doc.getEspecialidad().getNombre();
-        this.horarioAtencion = doc.getHorarioAtencion();
     }
 
     public String getNombre() {
@@ -40,10 +37,5 @@ public class DoctorDto {
     public String getEspecialidad() {
         return especialidad;
     }
-
-    public LocalTime getHorarioAtencion() {
-        return horarioAtencion;
-    }
-
     
 }

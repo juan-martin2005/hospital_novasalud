@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
+import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
 import com.hospital_novasalud.hospital_nova_salud.services.IDoctorService;
 
 import jakarta.validation.Valid;
@@ -51,6 +53,27 @@ public class DoctorController {
         if(!existe) return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al doctor con exito");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este doctor ya existe");
 
+    }
+
+    @PostMapping("/agregar-horario")
+    public ResponseEntity<?> modificarHorarioDoctor(@Valid @RequestBody HorarioDoctor horario, BindingResult result){
+        if(result.hasFieldErrors()) {
+            return validation(result);
+        }
+        ValidacionHorario registro = doctorService.updateHorario(horario);
+
+        switch (registro) {
+        case OK:
+            return ResponseEntity.status(HttpStatus.OK).body("Se registró el horario del doctor con éxito");
+        case HORARIO_INVALIDO:
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El horario de atención es invalido");
+        case HORARIO_EN_USO:
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El horario de atención ya está en uso");
+        case FECHA_INVALIDA:
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede asignar un horario en una fecha pasada");
+        default:
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error inesperado");
+    }
     }
 
     @DeleteMapping("/eliminar/{id}")

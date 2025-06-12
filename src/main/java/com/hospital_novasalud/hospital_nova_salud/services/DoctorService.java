@@ -1,9 +1,13 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +15,16 @@ import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
+import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IHorarioDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
 
 @Service
 public class DoctorService implements IDoctorService{
@@ -32,6 +39,8 @@ public class DoctorService implements IDoctorService{
     private IRolRepository rolRepository;
     @Autowired
     private IEstadoRepository estadoRepository;
+    @Autowired
+    private IHorarioDoctorRepository horarioDoctorRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -61,10 +70,35 @@ public class DoctorService implements IDoctorService{
     
             doctor.setUsuario(usuario);
             doctor.setEspecialidad(especialidad);
-            doctor.setHorarioAtencion(doc.getHorarioAtencion());
             doctorRepository.save(doctor);
         }
         return existe;
+    }
+
+    @Override
+    public ValidacionHorario updateHorario(HorarioDoctor horarioDoctor) {
+        Authentication docActual = SecurityContextHolder.getContext().getAuthentication(); 
+        Usuario usuario = usuarioRepository.findByNombreUsua(docActual.getName()).orElseThrow();
+        Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
+
+        boolean existeHorarioInicio = horarioDoctorRepository.existsByHorarioInicio(horarioDoctor.getHorarioInicio());
+        boolean existeHorarioFin = horarioDoctorRepository.existsByHorarioFin(horarioDoctor.getHorarioFin());
+        if(horarioDoctor.getDia().isBefore(LocalDate.now())) {
+            return ValidacionHorario.FECHA_INVALIDA; //No se puede asignar un horario en una fecha pasada
+        }
+        if(horarioDoctor.getHorarioInicio().isBefore(LocalTime.now()) ||
+           horarioDoctor.getHorarioFin().isBefore(LocalTime.now())) {
+            return ValidacionHorario.HORARIO_INVALIDO; //El horario ingresado es invalido 
+        }
+        if(existeHorarioInicio || existeHorarioFin) {
+            return ValidacionHorario.HORARIO_EN_USO; //El horario ya está en uso
+        }
+        horarioDoctor.setDoctor(doctor);
+        horarioDoctor.setDia(horarioDoctor.getDia());
+        horarioDoctor.setHorarioInicio(horarioDoctor.getHorarioInicio());
+        horarioDoctor.setHorarioFin(horarioDoctor.getHorarioFin());
+        horarioDoctorRepository.save(horarioDoctor);
+        return ValidacionHorario.OK; //Horario registrado con éxito
     }
 
     @Override
@@ -75,7 +109,7 @@ public class DoctorService implements IDoctorService{
         doc.getUsuario().setEstado(estado);
         doctorRepository.save(doc);
     }
-
+    
     @Override
     public boolean existsByEspecialidadId(Long id) {    
         return doctorRepository.existsByEspecialidadId(id);

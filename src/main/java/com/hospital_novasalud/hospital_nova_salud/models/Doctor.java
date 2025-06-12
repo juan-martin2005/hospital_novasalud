@@ -2,11 +2,9 @@ package com.hospital_novasalud.hospital_nova_salud.models;
 
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,22 +29,21 @@ public class Doctor{
     @ManyToOne
     @JoinColumn(name = "especialidad_id", nullable = false)
     private Especialidad especialidad;
-    @NotNull
-    @Column(columnDefinition = "TIME(0)")
-    private LocalTime horarioAtencion;
+
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private Set<RecetaMedica> recetaMedica;
     
     public Doctor() {
     }
-    
-    public Doctor(Long id, Especialidad especialidad, Usuario usuario, LocalTime horarioAtencion) {
-        this.id = id;
-        this.especialidad = especialidad;
+       
+    public Doctor(Usuario usuario, Especialidad especialidad, Set<RecetaMedica> recetaMedica) {
         this.usuario = usuario;
-        this.horarioAtencion = horarioAtencion;
+        this.especialidad = especialidad;
+        this.recetaMedica = recetaMedica;
     }
-    
+
+
+
     public Long getId() {
         return id;
     }
@@ -71,17 +68,6 @@ public class Doctor{
         this.usuario = usuario;
     }
     
-    public LocalTime getHorarioAtencion() {
-        return horarioAtencion;
-    }
-    
-    public void setHorarioAtencion(LocalTime horarioAtencion) {
-        this.horarioAtencion = horarioAtencion;
-    }
-    
-    public void registrarHorario(){
-        
-    }
     public Set<RecetaMedica> getRecetaMedica() {
         return recetaMedica;
     }
