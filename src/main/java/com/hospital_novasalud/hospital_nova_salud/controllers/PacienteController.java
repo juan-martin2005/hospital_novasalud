@@ -41,21 +41,27 @@ public class PacienteController {
             return validation(result);
         }
         boolean existe = pacienteService.save(paciente);
-        if(!existe) return ResponseEntity.status(HttpStatus.CREATED).body("Se registró con exito");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El paciente ya existe en el sistema");
+        Map<String, String> response = new HashMap<>();
+        if (!existe) {
+            response.put("mensaje", "Se registró con éxito");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+
+        response.put("error", "El paciente ya existe en el sistema");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-    
+
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         Optional<Paciente> paciente = pacienteService.findPacienteById(id);
-        if(paciente.isEmpty() || paciente.get().getUsuario().getEstado().getId() == 2){
+        if (paciente.isEmpty() || paciente.get().getUsuario().getEstado().getId() == 2) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado");
         }
-        
+
         pacienteService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Paciente eliminado con exito");
     }
-    
+
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(
