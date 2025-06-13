@@ -46,12 +46,20 @@ public class DoctorController {
         if(result.hasFieldErrors()) {
             return validation(result);
         }
+        Map<String, String> mensaje = new HashMap<>();
         boolean existe = doctorService.save(doctor);
         Especialidad especialidad = doctorService.findEspecialidad(doctor);
 
-        if(especialidad == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la especialidad");
-        if(!existe) return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al doctor con exito");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este doctor ya existe");
+        if(especialidad == null){
+            mensaje.put("Error:", "No se encontró la especialidad");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
+        } 
+        if(!existe) {
+            mensaje.put("Mensaje:", "Se registro al doctor con exito");
+            return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
+        }
+        mensaje.put("Error:", "El nombre de usuario para este doctor ya existe");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
 
     }
 

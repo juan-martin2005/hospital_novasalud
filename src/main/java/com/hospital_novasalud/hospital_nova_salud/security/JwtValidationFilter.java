@@ -28,11 +28,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
     public JwtValidationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return path.equals("/api/paciente/registrar") || path.equals("/login") || path.equals("/api/especialidades/listar");
-    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
