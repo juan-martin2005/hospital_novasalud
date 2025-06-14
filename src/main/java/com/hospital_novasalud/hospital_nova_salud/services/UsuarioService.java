@@ -11,6 +11,7 @@ import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 
 
 
@@ -27,12 +28,16 @@ public class UsuarioService implements IUsuarioService{
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Validaciones deleteById(Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
+        if(usuario.isEmpty() || usuario.get().getEstado().getId() == 2){
+            return Validaciones.USUARIO_NO_ENCONTRADO;
+        }
         Estado estado = estadoRepository.findById(2).orElseThrow(); //1=Activo, 2=Inactivo
         Usuario user = usuario.orElseThrow();
         user.setEstado(estado);
         usuarioRepository.save(user);
+        return Validaciones.OK;
     }
     @Override
     public Optional<Usuario> findUsuarioById(Long id) {

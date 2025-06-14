@@ -3,7 +3,6 @@ package com.hospital_novasalud.hospital_nova_salud.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IPacienteService;
 
 import jakarta.validation.Valid;
@@ -40,26 +40,38 @@ public class PacienteController {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
-        boolean existe = pacienteService.save(paciente);
-        Map<String, String> response = new HashMap<>();
-        if (!existe) {
-            response.put("mensaje", "Se registró con éxito");
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones registrarPaciente = pacienteService.save(paciente);
+        switch (registrarPaciente) {
+            case YA_EXISTE:
+                mensaje.put("error", "El paciente ya existe en el sistema");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+            case OK:
+                mensaje.put("mensaje", "Se registró con éxito");
+                return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje);       
         }
-
-        response.put("error", "El paciente ya existe en el sistema");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        Optional<Paciente> paciente = pacienteService.findPacienteById(id);
-        if (paciente.isEmpty() || paciente.get().getUsuario().getEstado().getId() == 2) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado");
+    public ResponseEntity<?> eliminarPaciente(@PathVariable Long id) {
+        
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones eliminar = pacienteService.deleteById(id);
+        switch (eliminar) {
+            case USUARIO_NO_ENCONTRADO:
+                mensaje.put("error", "El paciente ya existe en el sistema");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
+            case OK:
+                mensaje.put("mensaje", "Paciente eliminado con exito");
+                return ResponseEntity.status(HttpStatus.OK).body(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje);
         }
 
-        pacienteService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Paciente eliminado con exito");
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

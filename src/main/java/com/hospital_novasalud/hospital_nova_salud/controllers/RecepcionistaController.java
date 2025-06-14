@@ -3,7 +3,6 @@ package com.hospital_novasalud.hospital_nova_salud.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.RecepcionistaDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Recepcionista;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IRecepcionistaService;
 
 import jakarta.validation.Valid;
@@ -38,22 +38,38 @@ public class RecepcionistaController {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
-        boolean existe = recepcionistaService.save(recepcionista);
-        if(!existe) return ResponseEntity.status(HttpStatus.CREATED).body("Se registro al recepcionista con exito");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario para este recepcionista ya existe");
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones registrarRecepcionista = recepcionistaService.save(recepcionista);
+        switch (registrarRecepcionista) {
+            case YA_EXISTE:
+                mensaje.put("error", "El nombre de usuario para este recepcionista ya existe");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+            case OK:
+                mensaje.put("mensaje", "Se registro al recepcionista con exito");
+                return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje);  
+        }
         
     }
     
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
 
-        Optional<Recepcionista> recepcionista = recepcionistaService.findRecepcionistaById(id);
-        if (recepcionista.isEmpty() || recepcionista.get().getUsuario().getEstado().getId() == 2) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recepcionista no encontrado");
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones eliminar = recepcionistaService.deleteById(id);
+        switch (eliminar) {
+            case USUARIO_NO_ENCONTRADO:
+                mensaje.put("error", "Recepcionista no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
+            case OK:
+                mensaje.put("error", "Recepcionista eliminado con exito");
+                return ResponseEntity.status(HttpStatus.OK).body(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje); 
         }
-
-        recepcionistaService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Recepcionista eliminado con exito");
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

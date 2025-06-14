@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.hospital_novasalud.hospital_nova_salud.dto.EspecialidadDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 
 @Service
 public class EspecialidadesService implements IEspecialidadesService{
@@ -21,20 +22,24 @@ public class EspecialidadesService implements IEspecialidadesService{
     }
 
     @Override
-    public boolean save(Especialidad especialidad) {
-        boolean existe = especialidadRepository.existsByNombre(especialidad.getNombre());
-        if(!existe){
-            especialidadRepository.save(especialidad);
+    public Validaciones save(Especialidad especialidad) {
+        boolean existeEspecialidad = especialidadRepository.existsByNombre(especialidad.getNombre());
+        if(existeEspecialidad){
+            return Validaciones.YA_EXISTE;
         }
-        return existe;
+        especialidadRepository.save(especialidad);
+        return Validaciones.OK;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Validaciones deleteById(Long id) {
         boolean existe = especialidadRepository.existsById(id);
-        if(existe){
-            especialidadRepository.deleteById(id);
+        if(!existe){
+            return Validaciones.ESPECIALIDAD_NO_ENCONTRADA;
         }
+        especialidadRepository.deleteById(id);
+        return Validaciones.OK;
+
     }
 
 }

@@ -16,6 +16,7 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRecepcionistaRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 
 @Service
 public class RecepcionistaService implements IRecepcionistaService {
@@ -42,37 +43,42 @@ public class RecepcionistaService implements IRecepcionistaService {
     }
 
     @Override
-    public boolean save(Recepcionista re) {
+    public Validaciones save(Recepcionista re) {
         boolean existe = usuarioRepository.existsByNombreUsua(re.getUsuario().getNombreUsua());
         Rol rol = rolRepository.findByNombreRol("ROL_RECEPCIONISTA");
         Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Recepcionista recepcionista = new Recepcionista();
         Usuario usuario = new Usuario();
 
-        if (!existe) {
-            usuario.setNombreUsua(re.getUsuario().getNombreUsua());
-            usuario.setContrasena(passwordEncoder.encode(re.getUsuario().getContrasena()));
-            usuario.setNombre(re.getUsuario().getNombre());
-            usuario.setApellido(re.getUsuario().getApellido());
-            usuario.setNumero(re.getUsuario().getNumero());
-            usuario.setSexo(re.getUsuario().getSexo());
-            usuario.setEstado(estadoActivo);
-            usuario.setRol(rol);
-            usuario = usuarioRepository.save(usuario);
-
-            recepcionista.setUsuario(usuario);
-            recepcionistaRepository.save(recepcionista);
+        if (existe) {
+            return Validaciones.YA_EXISTE;
         } 
-        return existe;
+        usuario.setNombreUsua(re.getUsuario().getNombreUsua());
+        usuario.setContrasena(passwordEncoder.encode(re.getUsuario().getContrasena()));
+        usuario.setNombre(re.getUsuario().getNombre());
+        usuario.setApellido(re.getUsuario().getApellido());
+        usuario.setNumero(re.getUsuario().getNumero());
+        usuario.setSexo(re.getUsuario().getSexo());
+        usuario.setEstado(estadoActivo);
+        usuario.setRol(rol);
+        usuario = usuarioRepository.save(usuario);
+
+        recepcionista.setUsuario(usuario);
+        recepcionistaRepository.save(recepcionista);
+        return Validaciones.OK;
     }
     
     @Override
-    public void deleteById(Long id) {
+    public Validaciones deleteById(Long id) {
         Optional<Recepcionista> recepcionista = recepcionistaRepository.findById(id);
+        if (recepcionista.isEmpty() || recepcionista.get().getUsuario().getEstado().getId() == 2) {
+            return Validaciones.USUARIO_NO_ENCONTRADO;
+        }
         Estado estado = estadoRepository.findById(2).orElseThrow(); // 1=Activo, 2=Inactivo
         Recepcionista recep = recepcionista.orElseThrow();
         recep.getUsuario().setEstado(estado);
         recepcionistaRepository.save(recep);
+        return Validaciones.OK;
     }
     
     @Override

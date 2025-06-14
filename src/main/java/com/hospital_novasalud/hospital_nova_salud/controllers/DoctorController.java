@@ -3,7 +3,6 @@ package com.hospital_novasalud.hospital_nova_salud.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
-import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
 import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IDoctorService;
 
 import jakarta.validation.Valid;
@@ -47,19 +46,22 @@ public class DoctorController {
             return validation(result);
         }
         Map<String, String> mensaje = new HashMap<>();
-        boolean existe = doctorService.save(doctor);
-        Especialidad especialidad = doctorService.findEspecialidad(doctor);
-
-        if(especialidad == null){
-            mensaje.put("Error:", "No se encontró la especialidad");
+        Validaciones registro = doctorService.save(doctor);
+        switch (registro) {
+            case YA_EXISTE:
+            mensaje.put("Error", "El nombre de usuario para este doctor ya existe");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+            case ESPECIALIDAD_NO_ENCONTRADA:
+            mensaje.put("Error", "No se encontró la especialidad");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
-        } 
-        if(!existe) {
-            mensaje.put("Mensaje:", "Se registro al doctor con exito");
+            case OK:
+            mensaje.put("Mensaje", "Se registro al doctor con exito");
             return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
+            default:
+            mensaje.put("Error", "No se puedo realizar la operacion");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
+
         }
-        mensaje.put("Error:", "El nombre de usuario para este doctor ya existe");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
 
     }
 
@@ -72,7 +74,7 @@ public class DoctorController {
 
         switch (registro) {
         case OK:
-            return ResponseEntity.status(HttpStatus.OK).body("Se registró el horario del doctor con éxito");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Se registró el horario del doctor con éxito");
         case HORARIO_INVALIDO:
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El horario de atención es invalido");
         case HORARIO_EN_USO:
@@ -86,13 +88,19 @@ public class DoctorController {
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
-        Optional<Doctor> doctor = doctorService.findDoctorById(id);
-        if(doctor.isEmpty() || doctor.get().getUsuario().getEstado().getId() == 2){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor no encontrado");
+        Map<String,String> mensaje = new HashMap<>();
+        Validaciones eliminar = doctorService.deleteById(id);
+        switch (eliminar) {
+            case USUARIO_NO_ENCONTRADO:
+                mensaje.put("error","Doctor no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);       
+            case OK: 
+                mensaje.put("error","Doctor eliminado correctamente");
+                return ResponseEntity.status(HttpStatus.OK).body(mensaje);       
+            default:
+                mensaje.put("error", "No se puedo realizar esta accion");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);       
         }
-        
-        doctorService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Doctor eliminado con exito");
     }
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();

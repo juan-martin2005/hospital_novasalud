@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,22 +37,30 @@ public class CitaMedicaController {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
+        Map<String, String> mensaje = new HashMap<>();
         ValidacionHorario citaDisponible = citaMedicaService.save(citaMedica);
         switch (citaDisponible) {
             case OK:
-                return ResponseEntity.ok("Cita médica registrada correctamente");   
+                mensaje.put("mensaje", "Cita médica registrada correctamente");
+                return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);   
             case FECHA_INVALIDA:
-                return ResponseEntity.badRequest().body("Fecha ingresada es inválido");   
+                mensaje.put("error", "Fecha ingresada es inválido");
+                return ResponseEntity.badRequest().body(mensaje);   
             case HORARIO_INVALIDO:
-                return ResponseEntity.badRequest().body("Hora ingresada es inválido");   
+                mensaje.put("error", "Hora ingresada es inválido");
+                return ResponseEntity.badRequest().body(mensaje);   
             case HORARIO_NO_DISPONIBLE:
-                return ResponseEntity.badRequest().body("Horario no disponible");
+                mensaje.put("error", "Horario no disponible");
+                return ResponseEntity.badRequest().body(mensaje);
             case HORARIO_EN_USO:
-                return ResponseEntity.badRequest().body("Horario para esta cita no se encuentra disponible");   
+                mensaje.put("error", "Horario para esta cita no se encuentra disponible");
+                return ResponseEntity.badRequest().body(mensaje);   
             case ERROR:
-                return ResponseEntity.badRequest().body("Doctor no se encontró");
+                mensaje.put("error", "Doctor no se encontró");
+                return ResponseEntity.badRequest().body(mensaje);
             default:
-                return ResponseEntity.internalServerError().body("Ocurrio un error");
+                mensaje.put("error", "Ocurrio un error");
+                return ResponseEntity.internalServerError().body(mensaje);
         }
     }
 

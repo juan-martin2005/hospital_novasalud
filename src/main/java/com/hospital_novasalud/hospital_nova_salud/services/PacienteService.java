@@ -16,6 +16,7 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository
 import com.hospital_novasalud.hospital_nova_salud.repositories.IPacienteRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 
 @Service
 public class PacienteService implements IPacienteService{
@@ -37,37 +38,42 @@ public class PacienteService implements IPacienteService{
 
     
     @Override
-    public boolean save(Paciente pa) {
-        boolean existe = pacienteRepository.existsByDni(pa.getDni());
+    public Validaciones save(Paciente pa) {
+        boolean existePaciente = pacienteRepository.existsByDni(pa.getDni());
         Rol rol = rolRepository.findByNombreRol("ROL_PACIENTE");
         Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Paciente paciente = new Paciente();
         Usuario usuario = new Usuario();
 
-        if(!existe){
-            paciente.setDni(pa.getDni());
-            usuario.setContrasena(passwordEncoder.encode(pa.getUsuario().getContrasena()));
-            usuario.setNombre(pa.getUsuario().getNombre());
-            usuario.setNombreUsua(paciente.getDni());
-            usuario.setApellido(pa.getUsuario().getApellido());
-            usuario.setNumero(pa.getUsuario().getNumero());
-            usuario.setSexo(pa.getUsuario().getSexo());
-            usuario.setEstado(estadoActivo);
-            usuario.setRol(rol);
-            usuario = usuarioRepository.save(usuario);
-    
-            paciente.setUsuario(usuario);
-            pacienteRepository.save(paciente);
+        if(existePaciente){
+           return Validaciones.YA_EXISTE;
         }
-        return existe;
+        paciente.setDni(pa.getDni());
+        usuario.setContrasena(passwordEncoder.encode(pa.getUsuario().getContrasena()));
+        usuario.setNombre(pa.getUsuario().getNombre());
+        usuario.setNombreUsua(paciente.getDni());
+        usuario.setApellido(pa.getUsuario().getApellido());
+        usuario.setNumero(pa.getUsuario().getNumero());
+        usuario.setSexo(pa.getUsuario().getSexo());
+        usuario.setEstado(estadoActivo);
+        usuario.setRol(rol);
+        usuario = usuarioRepository.save(usuario);
+
+        paciente.setUsuario(usuario);
+        pacienteRepository.save(paciente);
+        return Validaciones.OK;
     }
     @Override
-    public void deleteById(Long id) {
+    public Validaciones deleteById(Long id) {
         Optional<Paciente> paciente = pacienteRepository.findById(id);
+        if (paciente.isEmpty() || paciente.get().getUsuario().getEstado().getId() == 2) {
+            return Validaciones.USUARIO_NO_ENCONTRADO;
+        }
         Estado estado = estadoRepository.findById(2).orElseThrow(); //1=Activo, 2=Inactivo
         Paciente pac = paciente.orElseThrow();
         pac.getUsuario().setEstado(estado);
         pacienteRepository.save(pac);
+        return Validaciones.OK;
     }
 
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.EspecialidadDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IEspecialidadesService;
 
 import jakarta.validation.Valid;
@@ -37,15 +39,37 @@ public class EspecialidadController {
         if(result.hasFieldErrors()) {
             return validation(result);
         }
-        boolean existe = especialidadesService.save(especialidad);
-        if (!existe) return ResponseEntity.ok("Especialidad registrada correctamente");
-        return ResponseEntity.badRequest().body("La especialidad ya existe");
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones existeEspecialidad = especialidadesService.save(especialidad);
+        switch (existeEspecialidad) {
+            case YA_EXISTE:
+                mensaje.put("error", "La especialidad ya existe");
+                return ResponseEntity.badRequest().body(mensaje);
+            case OK:
+                mensaje.put("mensaje", "Especialidad registrada correctamente");
+                return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje);
+
+        }
     }
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarEspecialidad(@PathVariable Long id) {
-        especialidadesService.deleteById(id);
-        return ResponseEntity.ok("Especialidad eliminada correctamente");
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones eliminar = especialidadesService.deleteById(id);
+        switch (eliminar) {
+            case ESPECIALIDAD_NO_ENCONTRADA:
+                mensaje.put("error", "La especialidad seleccionada no existe");
+                return ResponseEntity.badRequest().body(mensaje);
+            case OK:
+                mensaje.put("mensaje", "Especialidad eliminada correctamente");
+                return ResponseEntity.ok(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje);
+        }
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

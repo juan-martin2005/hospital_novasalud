@@ -25,6 +25,7 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IHorarioDoctorRep
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
 import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
+import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 
 @Service
 public class DoctorService implements IDoctorService{
@@ -49,30 +50,33 @@ public class DoctorService implements IDoctorService{
         return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorDto::new).toList();
     }
     @Override
-    public boolean save(Doctor doc) {
-        boolean existe = usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua());
+    public Validaciones save(Doctor doc) {
+        boolean existeNombreUsuario = usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua());
         Especialidad especialidad = findEspecialidad(doc);
         Rol rol = rolRepository.findByNombreRol("ROL_DOCTOR");
         Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Doctor doctor = new Doctor();
         Usuario usuario = new Usuario();
-
-        if(!existe){
-            usuario.setNombreUsua(doc.getUsuario().getNombreUsua());
-            usuario.setContrasena(passwordEncoder.encode(doc.getUsuario().getContrasena()));
-            usuario.setNombre(doc.getUsuario().getNombre());
-            usuario.setApellido(doc.getUsuario().getApellido());
-            usuario.setNumero(doc.getUsuario().getNumero());
-            usuario.setSexo(doc.getUsuario().getSexo());
-            usuario.setEstado(estadoActivo);
-            usuario.setRol(rol);
-            usuario = usuarioRepository.save(usuario);
-    
-            doctor.setUsuario(usuario);
-            doctor.setEspecialidad(especialidad);
-            doctorRepository.save(doctor);
+        if(especialidad == null){
+            return Validaciones.ESPECIALIDAD_NO_ENCONTRADA;
         }
-        return existe;
+        if(existeNombreUsuario){
+            return Validaciones.YA_EXISTE;
+        }
+        usuario.setNombreUsua(doc.getUsuario().getNombreUsua());
+        usuario.setContrasena(passwordEncoder.encode(doc.getUsuario().getContrasena()));
+        usuario.setNombre(doc.getUsuario().getNombre());
+        usuario.setApellido(doc.getUsuario().getApellido());
+        usuario.setNumero(doc.getUsuario().getNumero());
+        usuario.setSexo(doc.getUsuario().getSexo());
+        usuario.setEstado(estadoActivo);
+        usuario.setRol(rol);
+        usuario = usuarioRepository.save(usuario);
+
+        doctor.setUsuario(usuario);
+        doctor.setEspecialidad(especialidad);
+        doctorRepository.save(doctor);
+        return Validaciones.OK;
     }
 
     @Override
@@ -102,12 +106,16 @@ public class DoctorService implements IDoctorService{
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Validaciones deleteById(Long id) {
         Optional<Doctor> doctor = doctorRepository.findById(id);
+        if(doctor.isEmpty() || doctor.get().getUsuario().getEstado().getId() == 2){
+            return Validaciones.USUARIO_NO_ENCONTRADO;
+        }
         Estado estado = estadoRepository.findById(2).orElseThrow(); //1=Activo, 2=Inactivo
         Doctor doc = doctor.orElseThrow();
         doc.getUsuario().setEstado(estado);
         doctorRepository.save(doc);
+        return Validaciones.OK;
     }
     
     @Override
