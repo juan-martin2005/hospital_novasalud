@@ -62,7 +62,7 @@ public class PacienteController {
         Validaciones eliminar = pacienteService.deleteById(id);
         switch (eliminar) {
             case USUARIO_NO_ENCONTRADO:
-                mensaje.put("error", "El paciente ya existe en el sistema");
+                mensaje.put("error", "Paciente no encontrado");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
             case OK:
                 mensaje.put("mensaje", "Paciente eliminado con exito");
