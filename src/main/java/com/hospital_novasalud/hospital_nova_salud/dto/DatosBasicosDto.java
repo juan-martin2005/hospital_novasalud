@@ -17,7 +17,7 @@ public class DatosBasicosDto {
     @NotBlank
     private String numero;
     @NotNull
-    private char sexo;
+    private Character sexo;
     public DatosBasicosDto() {
     }
     public DatosBasicosDto(Usuario usuario){
@@ -44,10 +44,10 @@ public class DatosBasicosDto {
     public void setNumero(String numero) {
         this.numero = numero;
     }
-    public char getSexo() {
+    public Character getSexo() {
         return sexo;
     }
-    public void setSexo(char sexo) {
+    public void setSexo(Character sexo) {
         this.sexo = sexo;
     }
     
