@@ -5,34 +5,50 @@ import java.time.LocalTime;
 
 import com.hospital_novasalud.hospital_nova_salud.models.CitaMedica;
 
+import jakarta.validation.constraints.NotNull;
+
 
 public class CitaMedicaDto {
-    private final String paciente;
-    private final String doctor;
-    private final LocalDate fechaCita;
-    private final LocalTime horaCita;
+    @NotNull
+    private Long doctor;
+    @NotNull
+    private LocalDate fechaCita;
+    @NotNull
+    private LocalTime horaCita;
+
+    public CitaMedicaDto() {
+    }
 
     public CitaMedicaDto(CitaMedica cita) {
-        this.paciente = cita.getPaciente().getUsuario().getNombre();
-        this.doctor = "Dr. " + cita.getDoctor().getUsuario().getNombre();
+        this.doctor = cita.getDoctor().getId();
         this.fechaCita = cita.getFechaCita();
         this.horaCita = cita.getHoraCita();
     }
 
-    public String getPaciente() {
-        return paciente;
+    public Long getDoctor() {
+        return doctor;
     }
 
-    public String getDoctor() {
-        return doctor;
+    public void setDoctor(Long doctor) {
+        this.doctor = doctor;
     }
 
     public LocalDate getFechaCita() {
         return fechaCita;
     }
 
+    public void setFechaCita(LocalDate fechaCita) {
+        this.fechaCita = fechaCita;
+    }
+
     public LocalTime getHoraCita() {
         return horaCita;
     }
-    
+
+    public void setHoraCita(LocalTime horaCita) {
+        this.horaCita = horaCita;
+    }
+
+   
+
 }

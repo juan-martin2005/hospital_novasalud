@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.CitaMedica;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
@@ -36,27 +37,28 @@ public class CitaMedicaService implements ICitaMedicaService{
     @Autowired
     private IHorarioDoctorRepository horarioDoctorRepository;
     @Override
-    public List<CitaMedicaDto> findAll() {
-        return citaMedicaRepository.findAll().stream().map(CitaMedicaDto::new).toList();
+    public List<CitaMedicaEnvioDto> findAll() {
+        return citaMedicaRepository.findAll().stream().map(CitaMedicaEnvioDto::new).toList();
     }
 
     @Override
-    public ValidarHorario save(CitaMedica citaMedica) {
+    public ValidarHorario save(CitaMedicaDto cita) {
         Authentication usuarioName = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuario = usuarioRepository.findByNombreUsua(usuarioName.getName()).orElseThrow();
-        Optional<Doctor> doctor = doctorRepository.findById(citaMedica.getDoctor().getId());
+        Optional<Doctor> doctor = doctorRepository.findById(cita.getDoctor());
         Paciente paciente = pacienteRepository.findByUsuarioId(usuario.getId());
-        boolean existeFechaDoctor = horarioDoctorRepository.existsByDia(citaMedica.getFechaCita());
-        boolean existeHorarioDoctor = horarioDoctorRepository.existsByHorarioInicio(citaMedica.getHoraCita());
-        boolean citaMedicaEnUso = citaMedicaRepository.existsByDoctorAndFechaCitaAndHoraCita(doctor.orElseThrow(), citaMedica.getFechaCita(), citaMedica.getHoraCita());
+        boolean existeFechaDoctor = horarioDoctorRepository.existsByDia(cita.getFechaCita());
+        boolean existeHorarioDoctor = horarioDoctorRepository.existsByHorarioInicio(cita.getHoraCita());
+        boolean citaMedicaEnUso = citaMedicaRepository.existsByDoctorAndFechaCitaAndHoraCita(doctor.orElseThrow(), cita.getFechaCita(), cita.getHoraCita());
+        CitaMedica citaMedica = new CitaMedica();
         //Verificar si la hora de la cita médica concuerda con el hoario del doctor
         if(doctor.isEmpty()){
             return ValidarHorario.ERROR;
         }
-        if(citaMedica.getFechaCita().isBefore(LocalDate.now())) {
+        if(cita.getFechaCita().isBefore(LocalDate.now())) {
             return ValidarHorario.FECHA_INVALIDA; //No se puede ingresar una fecha pasada
         }
-        if(citaMedica.getHoraCita().isBefore(LocalTime.now())){
+        if(cita.getHoraCita().isBefore(LocalTime.now())){
             return ValidarHorario.HORARIO_INVALIDO; //El horario ingresado es invalido 
         }
         if(!existeFechaDoctor || !existeHorarioDoctor){ //NOTA: Falta validar que la hora sea independiente de cada doctor
@@ -67,8 +69,8 @@ public class CitaMedicaService implements ICitaMedicaService{
         }
         citaMedica.setPaciente(paciente);
         citaMedica.setDoctor(doctor.orElseThrow());
-        citaMedica.setFechaCita(citaMedica.getFechaCita());
-        citaMedica.setHoraCita(citaMedica.getHoraCita());
+        citaMedica.setFechaCita(cita.getFechaCita());
+        citaMedica.setHoraCita(cita.getHoraCita());
         citaMedicaRepository.save(citaMedica);
         return ValidarHorario.OK;
     }

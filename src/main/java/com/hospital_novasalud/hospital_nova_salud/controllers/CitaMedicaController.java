@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaDto;
-import com.hospital_novasalud.hospital_nova_salud.models.CitaMedica;
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.services.ICitaMedicaService;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
@@ -29,11 +29,11 @@ public class CitaMedicaController {
     private ICitaMedicaService citaMedicaService;
 
     @GetMapping("/listar")
-    public List<CitaMedicaDto> listarCitas() {
+    public List<CitaMedicaEnvioDto> listarCitas() {
         return citaMedicaService.findAll();
     }
     @PostMapping("/guardar")
-    public ResponseEntity<?> guardarCita(@Valid @RequestBody CitaMedica citaMedica, BindingResult result){
+    public ResponseEntity<?> guardarCita(@Valid @RequestBody CitaMedicaDto citaMedica, BindingResult result){
         Map<String, String> mensaje = new HashMap<>();
         int status = 0;
         try {
@@ -44,22 +44,22 @@ public class CitaMedicaController {
             switch (citaDisponible) {
                 case OK:
                     mensaje.put("mensaje", "Cita médica registrada correctamente");
-                    status = 201;
+                    status = 201; break;
                 case FECHA_INVALIDA:
                     mensaje.put("error", "Fecha ingresada es inválido");
-                    status = 400;
+                    status = 400; break;
                 case HORARIO_INVALIDO:
                     mensaje.put("error", "Hora ingresada es inválido");
-                    status = 400;
+                    status = 400; break;
                 case HORARIO_NO_DISPONIBLE:
                     mensaje.put("error", "Horario no disponible");
-                    status = 400;
+                    status = 400; break;
                 case HORARIO_EN_USO:
                     mensaje.put("error", "Horario para esta cita no se encuentra disponible");
-                    status = 400;
+                    status = 400; break;
                 case ERROR:
                     mensaje.put("error", "Doctor no se encontró");
-                    status = 400;
+                    status = 400; break;
             }
             return ResponseEntity.status(status).body(mensaje);
         } catch (Exception e) {
