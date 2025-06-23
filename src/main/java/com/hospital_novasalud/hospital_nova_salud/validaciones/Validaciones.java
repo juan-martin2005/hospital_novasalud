@@ -1,4 +1,4 @@
-package com.hospital_novasalud.hospital_nova_salud.resultEnum;
+package com.hospital_novasalud.hospital_nova_salud.validaciones;
 
 public enum Validaciones {
     OK,

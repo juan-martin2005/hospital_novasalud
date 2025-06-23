@@ -11,7 +11,7 @@ import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 
 

@@ -16,7 +16,7 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRecepcionistaRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 @Service
 public class RecepcionistaService implements IRecepcionistaService {
@@ -43,8 +43,8 @@ public class RecepcionistaService implements IRecepcionistaService {
     }
 
     @Override
-    public Validaciones save(Recepcionista re) {
-        boolean existe = usuarioRepository.existsByNombreUsua(re.getUsuario().getNombreUsua());
+    public Validaciones save(RecepcionistaDto re) {
+        boolean existe = usuarioRepository.existsByNombreUsua(re.getUsername());
         Rol rol = rolRepository.findByNombreRol("ROL_RECEPCIONISTA");
         Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
         Recepcionista recepcionista = new Recepcionista();
@@ -53,12 +53,12 @@ public class RecepcionistaService implements IRecepcionistaService {
         if (existe) {
             return Validaciones.YA_EXISTE;
         } 
-        usuario.setNombreUsua(re.getUsuario().getNombreUsua());
-        usuario.setContrasena(passwordEncoder.encode(re.getUsuario().getContrasena()));
-        usuario.setNombre(re.getUsuario().getNombre());
-        usuario.setApellido(re.getUsuario().getApellido());
-        usuario.setNumero(re.getUsuario().getNumero());
-        usuario.setSexo(re.getUsuario().getSexo());
+        usuario.setNombreUsua(re.getUsername());
+        usuario.setContrasena(passwordEncoder.encode(re.getContrasena()));
+        usuario.setNombre(re.getNombre());
+        usuario.setApellido(re.getApellido());
+        usuario.setNumero(re.getNumero());
+        usuario.setSexo(re.getSexo());
         usuario.setEstado(estadoActivo);
         usuario.setRol(rol);
         usuario = usuarioRepository.save(usuario);

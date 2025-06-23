@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.UsuarioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 public interface IUsuarioService {
 

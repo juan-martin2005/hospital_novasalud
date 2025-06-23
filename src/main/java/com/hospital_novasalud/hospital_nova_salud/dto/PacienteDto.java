@@ -2,41 +2,39 @@ package com.hospital_novasalud.hospital_nova_salud.dto;
 
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
 
-public class PacienteDto {
-    private final String dni;
-    private final String nombre;
-    private final String apellido;
-    private final String numero;
-    private final char sexo;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+public class PacienteDto extends DatosBasicosDto{
+    @NotBlank
+    @Size(min = 8, max = 8, message = "debe de tener 8 digitos")
+    @Pattern(regexp = "^[0-9]+$",message = "tiene un formato incorrecto")
+    private String dni;
+    @NotBlank
+    private String contrasena;
+    public PacienteDto() {
+    }
 
     public PacienteDto(Paciente pa){
+        super(pa.getUsuario());
         this.dni = pa.getDni();
-        this.nombre = pa.getUsuario().getNombre();
-        this.apellido = pa.getUsuario().getApellido();
-        this.numero = pa.getUsuario().getNumero();
-        this.sexo = pa.getUsuario().getSexo();
     }
 
     public String getDni() {
         return dni;
     }
-
-    public String getNombre() {
-        return nombre;
+    
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
-    public String getApellido() {
-        return apellido;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public String getNumero() {
-        return numero;
-    }
-
-    public char getSexo() {
-        return sexo;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
     
-   
-
 }

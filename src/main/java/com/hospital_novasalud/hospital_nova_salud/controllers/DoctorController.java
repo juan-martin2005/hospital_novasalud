@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,11 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
-import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
+import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IDoctorService;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
 
 import jakarta.validation.Valid;
 
@@ -32,7 +32,7 @@ public class DoctorController {
     IDoctorService doctorService;
 
     @GetMapping("/listar")
-    public List<DoctorDto> listarDoctores(){
+    public List<DoctorEnvioDto> listarDoctores(){
         return doctorService.findAll();
     }
     @GetMapping("/listar-especialidad/{id}")
@@ -41,72 +41,87 @@ public class DoctorController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarDoctor(@Valid @RequestBody Doctor doctor, BindingResult result){
-        if(result.hasFieldErrors()) {
-            return validation(result);
-        }
+    public ResponseEntity<?> registrarDoctor(@Valid @RequestBody DoctorDto doctor, BindingResult result){
         Map<String, String> mensaje = new HashMap<>();
-        Validaciones registro = doctorService.save(doctor);
-        switch (registro) {
-            case YA_EXISTE:
-            mensaje.put("Error", "El nombre de usuario para este doctor ya existe");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
-            case ESPECIALIDAD_NO_ENCONTRADA:
-            mensaje.put("Error", "No se encontró la especialidad");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
-            case OK:
-            mensaje.put("Mensaje", "Se registro al doctor con exito");
-            return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
-            default:
-            mensaje.put("Error", "No se puedo realizar la operacion");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);
-
+        int status = 0;
+        try {
+            if(result.hasFieldErrors()) {
+                return ValidarCampos.validation(result);
+            }
+            Validaciones registro = doctorService.save(doctor);
+            switch (registro) {
+                case YA_EXISTE:
+                    mensaje.put("Error", "El nombre de usuario para este doctor ya existe");
+                    status = 400; break;
+                case ESPECIALIDAD_NO_ENCONTRADA:
+                    mensaje.put("Error", "No se encontró la especialidad");
+                    status = 400; break;
+                case OK:
+                    mensaje.put("Mensaje", "Se registro al doctor con exito");
+                    status = 201; break;
+                default:
+                    mensaje.put("Error", "No se puedo realizar la operacion");
+                    status = 500; break;
+            }
+            return ResponseEntity.status(status).body(mensaje);
+            
+        } catch (Exception e) {
+            mensaje.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(mensaje);
         }
 
     }
 
     @PostMapping("/agregar-horario")
     public ResponseEntity<?> modificarHorarioDoctor(@Valid @RequestBody HorarioDoctor horario, BindingResult result){
-        if(result.hasFieldErrors()) {
-            return validation(result);
-        }
-        ValidacionHorario registro = doctorService.updateHorario(horario);
+        Map<String, String> mensaje = new HashMap<>();
+        int status = 0;
+        try {
+            if(result.hasFieldErrors()) {
+                return ValidarCampos.validation(result);
+            }
+            ValidarHorario registro = doctorService.updateHorario(horario);
 
-        switch (registro) {
-        case OK:
-            return ResponseEntity.status(HttpStatus.CREATED).body("Se registró el horario del doctor con éxito");
-        case HORARIO_INVALIDO:
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El horario de atención es invalido");
-        case HORARIO_EN_USO:
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El horario de atención ya está en uso");
-        case FECHA_INVALIDA:
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede asignar un horario en una fecha pasada");
-        default:
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error inesperado");
-    }
+            switch (registro) {
+            case OK:
+                mensaje.put("mensaje","Se registró el horario del doctor con éxito");
+                status = 201; break;
+            case HORARIO_INVALIDO:
+                mensaje.put("mensaje","El horario de atención es invalido");
+                status = 400; break;
+            case HORARIO_EN_USO:
+                mensaje.put("mensaje","El horario de atención ya está en uso");
+                status = 400; break;
+            case FECHA_INVALIDA:
+                mensaje.put("mensaje","No se puede asignar un horario en una fecha pasada");
+                status = 400; break;
+            default:
+                mensaje.put("mensaje","Ocurrió un error inesperado");
+                status = 500; break;
+            }
+            return ResponseEntity.status(status).body(mensaje);
+        } catch (Exception e) {
+            mensaje.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(mensaje);
+        }
     }
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
         Map<String,String> mensaje = new HashMap<>();
+        int status = 0;
         Validaciones eliminar = doctorService.deleteById(id);
         switch (eliminar) {
             case USUARIO_NO_ENCONTRADO:
                 mensaje.put("error","Doctor no encontrado");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);       
+                status = 404; break;
             case OK: 
                 mensaje.put("error","Doctor eliminado correctamente");
-                return ResponseEntity.status(HttpStatus.OK).body(mensaje);       
+                status = 200; break;
             default:
                 mensaje.put("error", "No se puedo realizar esta accion");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensaje);       
+                status = 500; break;
+            }
+            return ResponseEntity.status(status).body(mensaje);     
         }
-    }
-    private ResponseEntity<?> validation(BindingResult result) {
-        Map<String, String> errors = new HashMap<>();
-        result.getFieldErrors().forEach(
-            err -> errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage())
-        );
-        return ResponseEntity.badRequest().body(errors);
-    }
 }

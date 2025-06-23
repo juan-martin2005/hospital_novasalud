@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.EspecialidadDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IEspecialidadesService;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
 
 import jakarta.validation.Valid;
 
@@ -37,7 +38,7 @@ public class EspecialidadController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarEspecialidad(@Valid @RequestBody Especialidad especialidad, BindingResult result) {
         if(result.hasFieldErrors()) {
-            return validation(result);
+            return ValidarCampos.validation(result);
         }
         Map<String, String> mensaje = new HashMap<>();
         Validaciones existeEspecialidad = especialidadesService.save(especialidad);
@@ -70,13 +71,5 @@ public class EspecialidadController {
                 mensaje.put("error", "Ha ocurrido un error inesperado");
                 return ResponseEntity.internalServerError().body(mensaje);
         }
-    }
-
-    private ResponseEntity<?> validation(BindingResult result) {
-        Map<String, String> errors = new HashMap<>();
-        result.getFieldErrors().forEach(
-            err -> errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage())
-        );
-        return ResponseEntity.badRequest().body(errors);
     }
 }

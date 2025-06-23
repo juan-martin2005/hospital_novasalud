@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.hospital_novasalud.hospital_nova_salud.dto.EspecialidadDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 @Service
 public class EspecialidadesService implements IEspecialidadesService{

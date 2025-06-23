@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.RecepcionistaDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Recepcionista;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 public interface IRecepcionistaService {
     List<RecepcionistaDto> findAll();
     RecepcionistaDto findById(Long id);
-    Validaciones save (Recepcionista re);
+    Validaciones save (RecepcionistaDto re);
     Validaciones deleteById(Long id);
     boolean existsByUsuarioId(Long id);
     Optional<Recepcionista> findRecepcionistaById(Long id);

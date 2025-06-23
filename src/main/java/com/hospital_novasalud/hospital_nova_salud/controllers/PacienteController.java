@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
-import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.dto.PacienteEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.services.IPacienteService;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
 
 import jakarta.validation.Valid;
 
@@ -31,27 +31,34 @@ public class PacienteController {
     IPacienteService pacienteService;
 
     @GetMapping("/listar")
-    public List<PacienteDto> listarPaciente() {
+    public List<PacienteEnvioDto> listarPaciente() {
         return pacienteService.findAll();
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarPaciente(@Valid @RequestBody Paciente paciente, BindingResult result) {
-        if (result.hasFieldErrors()) {
-            return validation(result);
-        }
+    public ResponseEntity<?> registrarPaciente(@Valid @RequestBody PacienteDto paciente, BindingResult result) {
         Map<String, String> mensaje = new HashMap<>();
-        Validaciones registrarPaciente = pacienteService.save(paciente);
-        switch (registrarPaciente) {
-            case YA_EXISTE:
-                mensaje.put("error", "El paciente ya existe en el sistema");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
-            case OK:
-                mensaje.put("mensaje", "Se registró con éxito");
-                return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
-            default:
-                mensaje.put("error", "Ha ocurrido un error inesperado");
-                return ResponseEntity.internalServerError().body(mensaje);       
+        int status = 0;
+        try {
+            if (result.hasFieldErrors()) {
+                return ValidarCampos.validation(result);
+            }
+            Validaciones registrarPaciente = pacienteService.save(paciente);
+            switch (registrarPaciente) {
+                case YA_EXISTE:
+                    mensaje.put("error", "El paciente ya existe en el sistema");
+                    status = 400; break;
+                case OK:
+                    mensaje.put("mensaje", "Se registró con éxito");
+                    status = 201; break;
+                default:
+                    mensaje.put("error", "Ha ocurrido un error inesperado");
+                    status = 500; break;
+            }
+            return ResponseEntity.status(status).body(mensaje);
+        } catch (Exception e) {
+            mensaje.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(mensaje);
         }
     }
 
@@ -59,25 +66,20 @@ public class PacienteController {
     public ResponseEntity<?> eliminarPaciente(@PathVariable Long id) {
         
         Map<String, String> mensaje = new HashMap<>();
+        int status = 0;
         Validaciones eliminar = pacienteService.deleteById(id);
         switch (eliminar) {
             case USUARIO_NO_ENCONTRADO:
                 mensaje.put("error", "Paciente no encontrado");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
+                status = 404; break;
             case OK:
                 mensaje.put("mensaje", "Paciente eliminado con exito");
-                return ResponseEntity.status(HttpStatus.OK).body(mensaje);
+                status = 200; break;
             default:
                 mensaje.put("error", "Ha ocurrido un error inesperado");
-                return ResponseEntity.internalServerError().body(mensaje);
-        }
-
-    }
-
-    private ResponseEntity<?> validation(BindingResult result) {
-        Map<String, String> errors = new HashMap<>();
-        result.getFieldErrors().forEach(
-                err -> errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage()));
-        return ResponseEntity.badRequest().body(errors);
+                status = 500; break;
+            }
+        
+        return ResponseEntity.status(status).body(mensaje);
     }
 }

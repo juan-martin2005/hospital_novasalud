@@ -7,9 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="usuarios")
@@ -17,20 +14,12 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     private String nombreUsua;
-    @NotBlank
     private String contrasena;
-    @NotBlank
     private String nombre;
-    @NotBlank
     private String apellido;
-    @NotBlank
-    @Size(min=9, max=9)
     private String numero;
-    @NotNull
     private char sexo;
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;

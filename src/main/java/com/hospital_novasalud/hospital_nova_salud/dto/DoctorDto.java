@@ -2,34 +2,25 @@ package com.hospital_novasalud.hospital_nova_salud.dto;
 
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 
-public class DoctorDto {
-    private final Long id;
-    private final String nombre;
-    private final String apellido;
-    private final String especialidad;
+import jakarta.validation.constraints.NotNull;
 
-
+public class DoctorDto extends UsuarioDto{
+    @NotNull
+    private Long especialidad;
+    
+    public DoctorDto(){ }
+    
     public DoctorDto(Doctor doc){
-        this.id = doc.getId();
-        this.nombre = doc.getUsuario().getNombre();
-        this.apellido = doc.getUsuario().getApellido();
-        this.especialidad = doc.getEspecialidad().getNombre();
+        super(doc.getUsuario());
+        this.especialidad = doc.getEspecialidad().getId();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public String getEspecialidad() {
+    public Long getEspecialidad() {
         return especialidad;
     }
-    
+
+    public void setEspecialidad(Long especialidad) {
+        this.especialidad = especialidad;
+    }
+   
 }

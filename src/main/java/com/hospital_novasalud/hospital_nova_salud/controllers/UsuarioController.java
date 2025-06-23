@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.UsuarioDto;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.services.IUsuarioService;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 
 @RestController
@@ -28,12 +28,10 @@ public class UsuarioController {
     }
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id){
-
-
+        
         Validaciones eliminar = usuarioService.deleteById(id);
         switch (eliminar) {
             case USUARIO_NO_ENCONTRADO:
-                
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
             case OK:
                 return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado con exito");

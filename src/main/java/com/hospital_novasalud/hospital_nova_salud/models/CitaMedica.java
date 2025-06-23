@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="citas_medicas")
@@ -22,13 +21,10 @@ public class CitaMedica {
     @ManyToOne
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
-    @NotNull
     private LocalDate fechaCita;
-    @NotNull
     @Column(columnDefinition = "TIME(0)")
     private LocalTime horaCita;
 

@@ -1,6 +1,6 @@
-package com.hospital_novasalud.hospital_nova_salud.resultEnum;
+package com.hospital_novasalud.hospital_nova_salud.validaciones;
 
-public enum ValidacionHorario {
+public enum ValidarHorario {
     OK,
     HORARIO_EN_USO,
     HORARIO_INVALIDO,

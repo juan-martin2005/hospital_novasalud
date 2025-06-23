@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
@@ -24,8 +25,8 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository
 import com.hospital_novasalud.hospital_nova_salud.repositories.IHorarioDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.ValidacionHorario;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
 
 @Service
 public class DoctorService implements IDoctorService{
@@ -46,12 +47,12 @@ public class DoctorService implements IDoctorService{
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<DoctorDto> findAll() {
-        return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorDto::new).toList();
+    public List<DoctorEnvioDto> findAll() {
+        return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorEnvioDto::new).toList();
     }
     @Override
-    public Validaciones save(Doctor doc) {
-        boolean existeNombreUsuario = usuarioRepository.existsByNombreUsua(doc.getUsuario().getNombreUsua());
+    public Validaciones save(DoctorDto doc) {
+        boolean existeNombreUsuario = usuarioRepository.existsByNombreUsua(doc.getUsername());
         Especialidad especialidad = findEspecialidad(doc);
         Rol rol = rolRepository.findByNombreRol("ROL_DOCTOR");
         Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
@@ -63,12 +64,12 @@ public class DoctorService implements IDoctorService{
         if(existeNombreUsuario){
             return Validaciones.YA_EXISTE;
         }
-        usuario.setNombreUsua(doc.getUsuario().getNombreUsua());
-        usuario.setContrasena(passwordEncoder.encode(doc.getUsuario().getContrasena()));
-        usuario.setNombre(doc.getUsuario().getNombre());
-        usuario.setApellido(doc.getUsuario().getApellido());
-        usuario.setNumero(doc.getUsuario().getNumero());
-        usuario.setSexo(doc.getUsuario().getSexo());
+        usuario.setNombreUsua(doc.getUsername());
+        usuario.setContrasena(passwordEncoder.encode(doc.getContrasena()));
+        usuario.setNombre(doc.getNombre());
+        usuario.setApellido(doc.getApellido());
+        usuario.setNumero(doc.getNumero());
+        usuario.setSexo(doc.getSexo());
         usuario.setEstado(estadoActivo);
         usuario.setRol(rol);
         usuario = usuarioRepository.save(usuario);
@@ -80,7 +81,7 @@ public class DoctorService implements IDoctorService{
     }
 
     @Override
-    public ValidacionHorario updateHorario(HorarioDoctor horarioDoctor) {
+    public ValidarHorario updateHorario(HorarioDoctor horarioDoctor) {
         Authentication docActual = SecurityContextHolder.getContext().getAuthentication(); 
         Usuario usuario = usuarioRepository.findByNombreUsua(docActual.getName()).orElseThrow();
         Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
@@ -88,21 +89,21 @@ public class DoctorService implements IDoctorService{
         boolean existeHorarioInicio = horarioDoctorRepository.existsByHorarioInicio(horarioDoctor.getHorarioInicio());
         boolean existeHorarioFin = horarioDoctorRepository.existsByHorarioFin(horarioDoctor.getHorarioFin());
         if(horarioDoctor.getDia().isBefore(LocalDate.now())) {
-            return ValidacionHorario.FECHA_INVALIDA; //No se puede asignar un horario en una fecha pasada
+            return ValidarHorario.FECHA_INVALIDA; //No se puede asignar un horario en una fecha pasada
         }
         if(horarioDoctor.getHorarioInicio().isBefore(LocalTime.now()) ||
            horarioDoctor.getHorarioFin().isBefore(LocalTime.now())) {
-            return ValidacionHorario.HORARIO_INVALIDO; //El horario ingresado es invalido 
+            return ValidarHorario.HORARIO_INVALIDO; //El horario ingresado es invalido 
         }
         if(existeHorarioInicio || existeHorarioFin) {
-            return ValidacionHorario.HORARIO_EN_USO; //El horario ya está en uso
+            return ValidarHorario.HORARIO_EN_USO; //El horario ya está en uso
         }
         horarioDoctor.setDoctor(doctor);
         horarioDoctor.setDia(horarioDoctor.getDia());
         horarioDoctor.setHorarioInicio(horarioDoctor.getHorarioInicio());
         horarioDoctor.setHorarioFin(horarioDoctor.getHorarioFin());
         horarioDoctorRepository.save(horarioDoctor);
-        return ValidacionHorario.OK; //Horario registrado con éxito
+        return ValidarHorario.OK; //Horario registrado con éxito
     }
 
     @Override
@@ -133,8 +134,8 @@ public class DoctorService implements IDoctorService{
         return doctorRepository.findByEspecialidadId(id).stream().map(DoctorDto::new).toList();
     }
     @Override
-    public Especialidad findEspecialidad(Doctor doc){
-        return especialidadRepository.findById(doc.getEspecialidad().getId()).orElse(null);
+    public Especialidad findEspecialidad(DoctorDto doc){
+        return especialidadRepository.findById(doc.getEspecialidad()).orElse(null);
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.PacienteEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
 import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
@@ -16,7 +17,7 @@ import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository
 import com.hospital_novasalud.hospital_nova_salud.repositories.IPacienteRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
-import com.hospital_novasalud.hospital_nova_salud.resultEnum.Validaciones;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 @Service
 public class PacienteService implements IPacienteService{
@@ -32,13 +33,13 @@ public class PacienteService implements IPacienteService{
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Override
-    public List<PacienteDto> findAll() {
-        return pacienteRepository.findByUsuario_EstadoId(1).stream().map(PacienteDto::new).toList();
+    public List<PacienteEnvioDto> findAll() {
+        return pacienteRepository.findByUsuario_EstadoId(1).stream().map(PacienteEnvioDto::new).toList();
     }
 
     
     @Override
-    public Validaciones save(Paciente pa) {
+    public Validaciones save(PacienteDto pa) {
         boolean existePaciente = pacienteRepository.existsByDni(pa.getDni());
         Rol rol = rolRepository.findByNombreRol("ROL_PACIENTE");
         Estado estadoActivo = estadoRepository.findById(1).orElseThrow();
@@ -49,12 +50,12 @@ public class PacienteService implements IPacienteService{
            return Validaciones.YA_EXISTE;
         }
         paciente.setDni(pa.getDni());
-        usuario.setContrasena(passwordEncoder.encode(pa.getUsuario().getContrasena()));
-        usuario.setNombre(pa.getUsuario().getNombre());
-        usuario.setNombreUsua(paciente.getDni());
-        usuario.setApellido(pa.getUsuario().getApellido());
-        usuario.setNumero(pa.getUsuario().getNumero());
-        usuario.setSexo(pa.getUsuario().getSexo());
+        usuario.setContrasena(passwordEncoder.encode(pa.getContrasena()));
+        usuario.setNombre(pa.getNombre());
+        usuario.setNombreUsua(pa.getDni());
+        usuario.setApellido(pa.getApellido());
+        usuario.setNumero(pa.getNumero());
+        usuario.setSexo(pa.getSexo());
         usuario.setEstado(estadoActivo);
         usuario.setRol(rol);
         usuario = usuarioRepository.save(usuario);

@@ -2,46 +2,36 @@ package com.hospital_novasalud.hospital_nova_salud.dto;
 
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 
-public class UsuarioDto {
+import jakarta.validation.constraints.NotBlank;
 
-    private final String nombreUsua;
-    private final String nombre;
-    private final String apellido;
-    private final String numero;
-    private final char sexo;
-    private final String rol;
+public class UsuarioDto extends DatosBasicosDto{
+
+    @NotBlank
+    private String username;
+    @NotBlank
+    private String contrasena;
+    
+    public UsuarioDto() {
+    }
 
     public UsuarioDto(Usuario usuario) {
-        this.nombreUsua = usuario.getNombreUsua();
-        this.nombre = usuario.getNombre();
-        this.apellido = usuario.getApellido();
-        this.numero = usuario.getNumero();
-        this.sexo = usuario.getSexo();
-        this.rol = usuario.getRol().getNombreRol();
+        super();
     }
 
-    public String getNombreUsua() {
-        return nombreUsua;
+    public String getUsername() {
+        return username;
     }
 
-    public String getNombre() {
-        return nombre;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getApellido() {
-        return apellido;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public String getNumero() {
-        return numero;
-    }
-
-    public char getSexo() {
-        return sexo;
-    }
-
-    public String getRol() {
-        return rol;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
 }
