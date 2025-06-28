@@ -19,7 +19,7 @@ public class HorarioDoctor {
     @ManyToOne
     @JoinColumn(name="doctor_id", nullable = false)
     private Doctor doctor;
-    private LocalDate dia;
+    private LocalDate fecha;
     @Column(columnDefinition = "TIME(0)")
     private LocalTime horarioInicio;
     @Column(columnDefinition = "TIME(0)")
@@ -27,9 +27,9 @@ public class HorarioDoctor {
 
     public HorarioDoctor() {
     }
-    public HorarioDoctor(Doctor doctor, LocalDate dia, LocalTime horarioInicio, LocalTime horarioFin) {
+    public HorarioDoctor(Doctor doctor, LocalDate fecha, LocalTime horarioInicio, LocalTime horarioFin) {
         this.doctor = doctor;
-        this.dia = dia;
+        this.fecha = fecha;
         this.horarioInicio = horarioInicio;
         this.horarioFin = horarioFin;
     }
@@ -39,11 +39,11 @@ public class HorarioDoctor {
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
     }
-    public LocalDate getDia() {
-        return dia;
+    public LocalDate getFecha() {
+        return fecha;
     }
-    public void setDia(LocalDate dia) {
-        this.dia = dia;
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
     public LocalTime getHorarioInicio() {
         return horarioInicio;

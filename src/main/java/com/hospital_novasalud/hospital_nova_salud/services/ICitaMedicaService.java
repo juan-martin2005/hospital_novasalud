@@ -9,6 +9,7 @@ import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
 
 public interface ICitaMedicaService {
     List<CitaMedicaEnvioDto> findAll();
+    List<CitaMedicaEnvioDto> findByPaciente();
     ValidarHorario save(CitaMedicaDto citaMedica);
     void deleteById(Long id);
 }

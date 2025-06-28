@@ -1,7 +1,6 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
@@ -81,28 +81,25 @@ public class DoctorService implements IDoctorService{
     }
 
     @Override
-    public ValidarHorario updateHorario(HorarioDoctor horarioDoctor) {
+    public ValidarHorario registrarHorario(HorarioDoctorDto horarioDoctor) {
         Authentication docActual = SecurityContextHolder.getContext().getAuthentication(); 
         Usuario usuario = usuarioRepository.findByNombreUsua(docActual.getName()).orElseThrow();
         Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
+        HorarioDoctor horario = new HorarioDoctor();
 
-        boolean existeHorarioInicio = horarioDoctorRepository.existsByHorarioInicio(horarioDoctor.getHorarioInicio());
-        boolean existeHorarioFin = horarioDoctorRepository.existsByHorarioFin(horarioDoctor.getHorarioFin());
-        if(horarioDoctor.getDia().isBefore(LocalDate.now())) {
+        boolean existeHorarioInicio = horarioDoctorRepository.existsByHorarioInicio(horarioDoctor.getHoraInicio());
+        boolean existeHorarioFin = horarioDoctorRepository.existsByHorarioFin(horarioDoctor.getHoraFin());
+        if(horarioDoctor.getFecha().isBefore(LocalDate.now())) {
             return ValidarHorario.FECHA_INVALIDA; //No se puede asignar un horario en una fecha pasada
-        }
-        if(horarioDoctor.getHorarioInicio().isBefore(LocalTime.now()) ||
-           horarioDoctor.getHorarioFin().isBefore(LocalTime.now())) {
-            return ValidarHorario.HORARIO_INVALIDO; //El horario ingresado es invalido 
         }
         if(existeHorarioInicio || existeHorarioFin) {
             return ValidarHorario.HORARIO_EN_USO; //El horario ya está en uso
         }
-        horarioDoctor.setDoctor(doctor);
-        horarioDoctor.setDia(horarioDoctor.getDia());
-        horarioDoctor.setHorarioInicio(horarioDoctor.getHorarioInicio());
-        horarioDoctor.setHorarioFin(horarioDoctor.getHorarioFin());
-        horarioDoctorRepository.save(horarioDoctor);
+        horario.setDoctor(doctor);
+        horario.setFecha(horarioDoctor.getFecha());
+        horario.setHorarioInicio(horarioDoctor.getHoraInicio());
+        horario.setHorarioFin(horarioDoctor.getHoraFin());
+        horarioDoctorRepository.save(horario);
         return ValidarHorario.OK; //Horario registrado con éxito
     }
 

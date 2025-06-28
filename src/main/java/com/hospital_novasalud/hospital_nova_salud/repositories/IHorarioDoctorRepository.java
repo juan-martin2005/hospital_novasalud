@@ -11,5 +11,5 @@ public interface IHorarioDoctorRepository extends JpaRepository<HorarioDoctor, L
 
     boolean existsByHorarioInicio(LocalTime horarioInicio);
     boolean existsByHorarioFin(LocalTime horarioFin);
-    boolean existsByDia(LocalDate dia);
+    boolean existsByFecha(LocalDate dia);
 }

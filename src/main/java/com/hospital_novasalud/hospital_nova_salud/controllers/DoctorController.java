@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
-import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.services.IDoctorService;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
@@ -73,14 +73,14 @@ public class DoctorController {
     }
 
     @PostMapping("/agregar-horario")
-    public ResponseEntity<?> modificarHorarioDoctor(@Valid @RequestBody HorarioDoctor horario, BindingResult result){
+    public ResponseEntity<?> modificarHorarioDoctor(@Valid @RequestBody HorarioDoctorDto horario, BindingResult result){
         Map<String, String> mensaje = new HashMap<>();
         int status = 0;
         try {
             if(result.hasFieldErrors()) {
                 return ValidarCampos.validation(result);
             }
-            ValidarHorario registro = doctorService.updateHorario(horario);
+            ValidarHorario registro = doctorService.registrarHorario(horario);
 
             switch (registro) {
             case OK:

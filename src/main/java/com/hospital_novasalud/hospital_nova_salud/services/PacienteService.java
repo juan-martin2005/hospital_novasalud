@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
@@ -14,6 +15,7 @@ import com.hospital_novasalud.hospital_nova_salud.models.Paciente;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IHorarioDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IPacienteRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
@@ -32,11 +34,17 @@ public class PacienteService implements IPacienteService{
     private IEstadoRepository estadoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private IHorarioDoctorRepository horarioDoctorRepository;
+    
     @Override
     public List<PacienteEnvioDto> findAll() {
         return pacienteRepository.findByUsuario_EstadoId(1).stream().map(PacienteEnvioDto::new).toList();
     }
-
+    @Override
+    public List<HorarioDoctorEnvioDto> findHorarioDoctor() {
+        return horarioDoctorRepository.findAll().stream().map(HorarioDoctorEnvioDto::new).toList();
+    }
     
     @Override
     public Validaciones save(PacienteDto pa) {
@@ -75,11 +83,5 @@ public class PacienteService implements IPacienteService{
         pac.getUsuario().setEstado(estado);
         pacienteRepository.save(pac);
         return Validaciones.OK;
-    }
-
-
-    @Override
-    public Optional<Paciente> findPacienteById(Long id) {
-        return pacienteRepository.findById(id);
     }
 }

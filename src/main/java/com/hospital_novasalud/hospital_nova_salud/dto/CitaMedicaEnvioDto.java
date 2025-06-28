@@ -15,8 +15,8 @@ public class CitaMedicaEnvioDto {
     public CitaMedicaEnvioDto(CitaMedica cita) {
         this.paciente = cita.getPaciente().getUsuario().getNombre();
         this.doctor = "Dr. " + cita.getDoctor().getUsuario().getNombre();
-        this.fechaCita = cita.getFechaCita();
-        this.horaCita = cita.getHoraCita();
+        this.fechaCita = cita.getHorarioDoctor().getFecha();
+        this.horaCita = cita.getHorarioDoctor().getHorarioInicio();
     }
 
     public String getPaciente() {

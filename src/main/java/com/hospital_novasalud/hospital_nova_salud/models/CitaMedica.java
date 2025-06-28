@@ -1,9 +1,6 @@
 package com.hospital_novasalud.hospital_nova_salud.models;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,17 +21,16 @@ public class CitaMedica {
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
-    private LocalDate fechaCita;
-    @Column(columnDefinition = "TIME(0)")
-    private LocalTime horaCita;
-
+    @ManyToOne
+    @JoinColumn(name = "horario_id", nullable = false)
+    HorarioDoctor horarioDoctor;
+    
     public CitaMedica() {
     }
-    public CitaMedica(Paciente paciente, Doctor doctor, LocalDate fechaCita, LocalTime horaCita) {
+    public CitaMedica(Paciente paciente, Doctor doctor, HorarioDoctor horarioDoctor) {
         this.paciente = paciente;
         this.doctor = doctor;
-        this.fechaCita = fechaCita;
-        this.horaCita = horaCita;
+        this.horarioDoctor = horarioDoctor;
     }
     public Long getId() {
         return id;
@@ -54,18 +50,11 @@ public class CitaMedica {
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
     }
-    public LocalDate getFechaCita() {
-        return fechaCita;
+    public HorarioDoctor getHorarioDoctor() {
+        return horarioDoctor;
     }
-    public void setFechaCita(LocalDate fechaCita) {
-        this.fechaCita = fechaCita;
+    public void setHorarioDoctor(HorarioDoctor horarioDoctor) {
+        this.horarioDoctor = horarioDoctor;
     }
-    public LocalTime getHoraCita() {
-        return horaCita;
-    }
-    public void setHoraCita(LocalTime horaCita) {
-        this.horaCita = horaCita;
-    }
-
     
 }

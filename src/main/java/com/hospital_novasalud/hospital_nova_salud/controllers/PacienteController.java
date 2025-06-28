@@ -15,11 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaEnvioDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.PacienteEnvioDto;
+import com.hospital_novasalud.hospital_nova_salud.services.ICitaMedicaService;
 import com.hospital_novasalud.hospital_nova_salud.services.IPacienteService;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
+import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
 
 import jakarta.validation.Valid;
 
@@ -28,11 +33,21 @@ import jakarta.validation.Valid;
 public class PacienteController {
 
     @Autowired
-    IPacienteService pacienteService;
-
+    private IPacienteService pacienteService;
+    @Autowired
+    private ICitaMedicaService citaMedicaService;
     @GetMapping("/listar")
     public List<PacienteEnvioDto> listarPaciente() {
         return pacienteService.findAll();
+    }
+
+    @GetMapping("/mis-citas")
+    public List<CitaMedicaEnvioDto> listarCitas() {
+        return citaMedicaService.findByPaciente();
+    }
+    @GetMapping("/listar-horario")
+    public List<HorarioDoctorEnvioDto> listarHorarioDoctor() {
+        return pacienteService.findHorarioDoctor();
     }
 
     @PostMapping("/registrar")
@@ -81,5 +96,36 @@ public class PacienteController {
             }
         
         return ResponseEntity.status(status).body(mensaje);
+    }
+
+     @PostMapping("/registrar-cita")
+    public ResponseEntity<?> guardarCita(@Valid @RequestBody CitaMedicaDto citaMedica, BindingResult result){
+        Map<String, String> mensaje = new HashMap<>();
+        int status = 0;
+        try {
+            if (result.hasFieldErrors()) {
+                return ValidarCampos.validation(result);
+            }
+            ValidarHorario citaDisponible = citaMedicaService.save(citaMedica);
+            switch (citaDisponible) {
+                case OK:
+                    mensaje.put("mensaje", "Cita médica registrada correctamente");
+                    status = 201; break;
+                case ERROR:
+                    mensaje.put("error", "Doctor no se encontró");
+                    status = 400; break;
+                case HORARIO_NO_DISPONIBLE:
+                    mensaje.put("error", "El horario no se encuentra disponible");
+                    status = 400; break;
+                default:
+                    mensaje.put("error", "Ocurrió un error inesperado");
+                    status = 500; break;
+            }
+            return ResponseEntity.status(status).body(mensaje);
+        } catch (Exception e) {
+            mensaje.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(mensaje);
+        }
+
     }
 }
