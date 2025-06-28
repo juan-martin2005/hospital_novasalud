@@ -7,17 +7,28 @@ import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
 
 public class HorarioDoctorEnvioDto {
 
+    private Long id;
     private String nombre;
     private LocalDate fecha;
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
     public HorarioDoctorEnvioDto(HorarioDoctor horarioDoctor) {
+        this.id = horarioDoctor.getId();
         this.nombre = horarioDoctor.getDoctor().getUsuario().getNombre();
         this.fecha = horarioDoctor.getFecha();
         this.horaInicio = horarioDoctor.getHorarioInicio();
         this.horaFin = horarioDoctor.getHorarioFin();
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
     }

@@ -10,14 +10,14 @@ public class CitaMedicaDto {
     @NotNull
     private Long doctorId;
     @NotNull
-    private Long citaMedicaId;
+    private Long horaCita;
 
     public CitaMedicaDto() {
     }
 
     public CitaMedicaDto(CitaMedica cita) {
         this.doctorId = cita.getDoctor().getId();
-        this.citaMedicaId = cita.getId();
+        this.horaCita = cita.getHorarioDoctor().getId();
     }
 
     public Long getDoctorId() {
@@ -28,12 +28,12 @@ public class CitaMedicaDto {
         this.doctorId = doctor;
     }
 
-    public Long getCitaMedicaId() {
-        return citaMedicaId;
+    public Long getHoraCita() {
+        return horaCita;
     }
 
-    public void setCitaMedicaId(Long citaMedicaId) {
-        this.citaMedicaId = citaMedicaId;
+    public void setHoraCita(Long citaMedicaId) {
+        this.horaCita = citaMedicaId;
     }
 
     

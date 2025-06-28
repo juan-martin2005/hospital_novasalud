@@ -54,7 +54,7 @@ public class CitaMedicaService implements ICitaMedicaService{
         Usuario usuario = usuarioRepository.findByNombreUsua(usuarioName.getName()).orElseThrow();
         Optional<Doctor> doctor = doctorRepository.findById(cita.getDoctorId());
         Paciente paciente = pacienteRepository.findByUsuarioId(usuario.getId());
-        Optional<HorarioDoctor> horario = horarioDoctorRepository.findById(cita.getCitaMedicaId());
+        Optional<HorarioDoctor> horario = horarioDoctorRepository.findById(cita.getHoraCita());
         CitaMedica citaMedica = new CitaMedica();
         //Verificar si la hora de la cita médica concuerda con el hoario del doctor
         if(doctor.isEmpty()){

@@ -33,6 +33,13 @@ public class HorarioDoctor {
         this.horarioInicio = horarioInicio;
         this.horarioFin = horarioFin;
     }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     public Doctor getDoctor() {
         return doctor;
     }
