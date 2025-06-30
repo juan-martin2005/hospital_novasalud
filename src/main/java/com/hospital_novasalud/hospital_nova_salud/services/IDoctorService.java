@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
@@ -22,5 +23,6 @@ public interface IDoctorService {
     boolean existsByEspecialidadId(Long id);
     boolean existsByUsuarioId(Long id);
     Especialidad findEspecialidad(DoctorDto doc);
+    List<HorarioDoctorEnvioDto> findHorarioDoctor();
 
 }

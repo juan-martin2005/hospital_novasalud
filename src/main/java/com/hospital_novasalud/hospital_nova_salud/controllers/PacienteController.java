@@ -117,6 +117,9 @@ public class PacienteController {
                 case HORARIO_NO_DISPONIBLE:
                     mensaje.put("error", "El horario no se encuentra disponible");
                     status = 400; break;
+                case HORARIO_EN_USO:
+                    mensaje.put("error", "El cita ya existe");
+                    status = 400; break;
                 default:
                     mensaje.put("error", "Ocurrió un error inesperado");
                     status = 500; break;

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.services.IDoctorService;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarCampos;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
@@ -39,7 +40,10 @@ public class DoctorController {
     public List<DoctorDto> listarDoctoresPorEspecialidad(@PathVariable Long id){
         return doctorService.findByEspecialidad(id);
     }
-
+    @GetMapping("/listar-horario")
+    public List<HorarioDoctorEnvioDto> listarHorario(){
+        return doctorService.findHorarioDoctor();
+    }
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarDoctor(@Valid @RequestBody DoctorDto doctor, BindingResult result){
         Map<String, String> mensaje = new HashMap<>();

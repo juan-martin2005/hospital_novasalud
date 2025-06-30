@@ -55,6 +55,9 @@ public class CitaMedicaService implements ICitaMedicaService{
         Optional<Doctor> doctor = doctorRepository.findById(cita.getDoctorId());
         Paciente paciente = pacienteRepository.findByUsuarioId(usuario.getId());
         Optional<HorarioDoctor> horario = horarioDoctorRepository.findById(cita.getHoraCita());
+
+        boolean exiteFechayHora = citaMedicaRepository.existsByHorarioDoctor_Id(cita.getHoraCita());
+
         CitaMedica citaMedica = new CitaMedica();
         //Verificar si la hora de la cita médica concuerda con el hoario del doctor
         if(doctor.isEmpty()){
@@ -62,6 +65,9 @@ public class CitaMedicaService implements ICitaMedicaService{
         }
         if(horario.isEmpty()){
             return ValidarHorario.HORARIO_NO_DISPONIBLE;
+        }
+        if(exiteFechayHora){
+            return ValidarHorario.HORARIO_EN_USO;
         }
         citaMedica.setPaciente(paciente);
         citaMedica.setDoctor(doctor.orElseThrow());

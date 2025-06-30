@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
@@ -49,6 +50,13 @@ public class DoctorService implements IDoctorService{
     @Override
     public List<DoctorEnvioDto> findAll() {
         return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorEnvioDto::new).toList();
+    }
+    @Override
+    public List<HorarioDoctorEnvioDto> findHorarioDoctor() {
+        Authentication usuarioName = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuario = usuarioRepository.findByNombreUsua(usuarioName.getName()).orElseThrow();
+        Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
+        return horarioDoctorRepository.findByDoctor_Id(doctor.getId()).stream().map(HorarioDoctorEnvioDto::new).toList();
     }
     @Override
     public Validaciones save(DoctorDto doc) {
