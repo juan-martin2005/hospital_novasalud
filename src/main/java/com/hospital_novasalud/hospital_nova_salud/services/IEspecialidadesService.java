@@ -10,5 +10,6 @@ import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 public interface IEspecialidadesService {
     List<EspecialidadDto> findAll();
     Validaciones save(Especialidad especialidad);
+    Validaciones update(Long id, Especialidad especialidad);
     Validaciones deleteById(Long id);
 }

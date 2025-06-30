@@ -1,6 +1,7 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,19 @@ public class EspecialidadesService implements IEspecialidadesService{
             return Validaciones.YA_EXISTE;
         }
         especialidadRepository.save(especialidad);
+        return Validaciones.OK;
+    }
+    
+    @Override
+    public Validaciones update(Long id, Especialidad especialidad) {
+        Optional<Especialidad> especialidadOp = especialidadRepository.findById(id);
+        if(especialidadOp.isEmpty()){
+            return Validaciones.ESPECIALIDAD_NO_ENCONTRADA;
+        }
+        Especialidad esp = especialidadOp.get();
+        esp.setNombre(especialidad.getNombre());
+        esp.setDescripcion(especialidad.getDescripcion());
+        especialidadRepository.save(esp);
         return Validaciones.OK;
     }
 

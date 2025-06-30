@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,6 +54,26 @@ public class EspecialidadController {
                 mensaje.put("error", "Ha ocurrido un error inesperado");
                 return ResponseEntity.internalServerError().body(mensaje);
 
+        }
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarEspecialidad(@PathVariable Long id, @Valid @RequestBody Especialidad especialidad, BindingResult result) {
+        if(result.hasFieldErrors()) {
+            return ValidarCampos.validation(result);
+        }
+        Map<String, String> mensaje = new HashMap<>();
+        Validaciones actualizar = especialidadesService.update(id, especialidad);
+        switch (actualizar) {
+            case ESPECIALIDAD_NO_ENCONTRADA:
+                mensaje.put("error", "La especialidad seleccionada no existe");
+                return ResponseEntity.badRequest().body(mensaje);
+            case OK:
+                mensaje.put("mensaje", "Especialidad actualizada correctamente");
+                return ResponseEntity.ok(mensaje);
+            default:
+                mensaje.put("error", "Ha ocurrido un error inesperado");
+                return ResponseEntity.internalServerError().body(mensaje);
         }
     }
 
