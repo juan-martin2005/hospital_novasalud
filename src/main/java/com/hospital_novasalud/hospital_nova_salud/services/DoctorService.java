@@ -1,6 +1,7 @@
 package com.hospital_novasalud.hospital_nova_salud.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,18 +13,26 @@ import org.springframework.stereotype.Service;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.GestionCitaDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
+import com.hospital_novasalud.hospital_nova_salud.models.CitaMedica;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
 import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.models.Estado;
+import com.hospital_novasalud.hospital_nova_salud.models.EstadoCitaEnum;
 import com.hospital_novasalud.hospital_nova_salud.models.HorarioDoctor;
+import com.hospital_novasalud.hospital_nova_salud.models.Medicamento;
+import com.hospital_novasalud.hospital_nova_salud.models.RecetaMedica;
 import com.hospital_novasalud.hospital_nova_salud.models.Rol;
 import com.hospital_novasalud.hospital_nova_salud.models.Usuario;
+import com.hospital_novasalud.hospital_nova_salud.repositories.ICitaMedicaRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IDoctorRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEstadoRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IHorarioDoctorRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IMedicamentoRepository;
+import com.hospital_novasalud.hospital_nova_salud.repositories.IRecetaMedicaRespository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IRolRepository;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IUsuarioRepository;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
@@ -44,6 +53,12 @@ public class DoctorService implements IDoctorService{
     private IEstadoRepository estadoRepository;
     @Autowired
     private IHorarioDoctorRepository horarioDoctorRepository;
+    @Autowired
+    private ICitaMedicaRepository citaMedicaRepository;
+    @Autowired
+    private IRecetaMedicaRespository recetaMedicaRespository;
+    @Autowired
+    private IMedicamentoRepository medicamentoRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -110,7 +125,45 @@ public class DoctorService implements IDoctorService{
         horarioDoctorRepository.save(horario);
         return ValidarHorario.OK; //Horario registrado con éxito
     }
+    @Override
+    public GestionCitaDto finalizarCita(GestionCitaDto gestionCita, Long id) {
+        Authentication usuarioName = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuario = usuarioRepository.findByNombreUsua(usuarioName.getName())
+                .orElseThrow();
+        Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
 
+
+        CitaMedica cita = citaMedicaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        //DOCTOR Y CITA DEBEN ESTAR RELACIONADOS
+        if (!cita.getDoctor().getId().equals(doctor.getId())) {
+            throw new RuntimeException("No puedes modificar citas de otro doctor");
+        }
+
+        String descripcion = gestionCita.descripcionReceta();
+        List<Long> medicamento = gestionCita.medicamentosReceta();
+
+        RecetaMedica nuevaReceta = new RecetaMedica();
+        nuevaReceta.setFechaActual(cita.getHorarioDoctor().getFecha().atStartOfDay());
+        nuevaReceta.setDescripcion(descripcion);
+        nuevaReceta.setCita(cita);
+
+        List<Medicamento> medicamentos = new ArrayList<>();
+        for (Long medicamentoId : medicamento){
+            Medicamento m = medicamentoRepository.findById(medicamentoId).
+                    orElseThrow(()-> new IllegalArgumentException("Medicamento no encontrado"));
+            medicamentos.add(m);
+        }
+        nuevaReceta.setMedicamentos(medicamentos);
+
+        recetaMedicaRespository.save(nuevaReceta);
+
+        cita.setEstado(EstadoCitaEnum.FINALIZADO);
+        citaMedicaRepository.save(cita);
+
+        return new GestionCitaDto("Finalizado",descripcion, medicamento);
+
+    }    
     @Override
     public Validaciones deleteById(Long id) {
         Optional<Doctor> doctor = doctorRepository.findById(id);
@@ -147,4 +200,5 @@ public class DoctorService implements IDoctorService{
     public Optional<Doctor> findDoctorById(Long id) {
         return doctorRepository.findById(id);
     }
+
 }

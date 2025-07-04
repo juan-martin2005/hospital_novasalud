@@ -2,49 +2,33 @@ package com.hospital_novasalud.hospital_nova_salud.models;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name="recetas_medicas")
+@Table(name="receta")
 public class RecetaMedica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name="doctor_id", nullable = false)
-    private Doctor doctor;
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name="paciente_id", nullable = false)
-    private Paciente paciente;
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name="medicamento_id", nullable = false)
-    private Medicamento medicamento;
-    @NotBlank
-    private String mensaje;
-    @NotNull
-    private LocalDateTime fechaCreada;
+    private String descripcion;
+    private LocalDateTime fechaActual;
+
+    @OneToOne
+    @JoinColumn(name = "cita_id", nullable = false)
+    private CitaMedica cita;
+
+    @ManyToMany
+    @JoinTable(
+            name = "receta_medica",
+            joinColumns = @JoinColumn(name = "receta_id"),
+            inverseJoinColumns = @JoinColumn(name = "medicamento_id")
+    )
+    private List<Medicamento> medicamentos = new ArrayList<>();
+
     public RecetaMedica() {
-    }
-    
-    public RecetaMedica(Doctor doctor, Paciente paciente, Medicamento medicamento, String mensaje,
-            LocalDateTime fechaCreada) {
-        this.doctor = doctor;
-        this.paciente = paciente;
-        this.medicamento = medicamento;
-        this.mensaje = mensaje;
-        this.fechaCreada = fechaCreada;
     }
 
     public Long getId() {
@@ -55,46 +39,35 @@ public class RecetaMedica {
         this.id = id;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public Paciente getPaciente() {
-        return paciente;
+    public LocalDateTime getFechaActual() {
+        return fechaActual;
     }
 
-    public void setPaciente(Paciente paciente) {
-        this.paciente = paciente;
+    public void setFechaActual(LocalDateTime fechaActual) {
+        this.fechaActual = fechaActual;
     }
 
-    public Medicamento getMedicamento() {
-        return medicamento;
+    public CitaMedica getCita() {
+        return cita;
     }
 
-    public void setMedicamento(Medicamento medicamento) {
-        this.medicamento = medicamento;
+    public void setCita(CitaMedica cita) {
+        this.cita = cita;
     }
 
-    public String getMensaje() {
-        return mensaje;
+    public List<Medicamento> getMedicamentos() {
+        return medicamentos;
     }
 
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
+    public void setMedicamentos(List<Medicamento> medicamentos) {
+        this.medicamentos = medicamentos;
     }
-
-    public LocalDateTime getFechaCreada() {
-        return fechaCreada;
-    }
-
-    public void setFechaCreada(LocalDateTime fechaCreada) {
-        this.fechaCreada = fechaCreada;
-    }
-
-    
-
 }

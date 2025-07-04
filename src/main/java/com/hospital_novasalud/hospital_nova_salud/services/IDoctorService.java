@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
+import com.hospital_novasalud.hospital_nova_salud.dto.GestionCitaDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.HorarioDoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.models.Doctor;
@@ -24,5 +25,6 @@ public interface IDoctorService {
     boolean existsByUsuarioId(Long id);
     Especialidad findEspecialidad(DoctorDto doc);
     List<HorarioDoctorEnvioDto> findHorarioDoctor();
+    GestionCitaDto finalizarCita(GestionCitaDto gestionCita, Long id);
 
 }

@@ -9,7 +9,7 @@ import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
 public interface IPacienteService {
     List<PacienteEnvioDto> findAll();
-    List<HorarioDoctorEnvioDto> findHorarioDoctor();
+    List<HorarioDoctorEnvioDto> findHorarioDoctor(Long id);
     Validaciones save(PacienteDto paciente);
     Validaciones deleteById(Long id);
 }

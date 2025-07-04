@@ -43,10 +43,9 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/especialidades/listar").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/doctor/listar").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/paciente/listar").hasAnyAuthority( "ROL_DOCTOR", "ROL_RECEPCIONISTA")
+            .requestMatchers("/api/recepcionista/medicamento/**").hasAuthority("ROL_RECEPCIONISTA")
             .requestMatchers("/api/paciente/**").hasAuthority("ROL_PACIENTE")
             
-            // .requestMatchers(HttpMethod.PUT, "/api/cita-medica/modificar/{id}").hasAuthority("ROL_PACIENTE")
-            // .requestMatchers(HttpMethod.DELETE, "/api/cita-medica/eliminar/{id}").hasAuthority("ROL_PACIENTE")
             .requestMatchers("/api/doctor/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/usuarios/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/recepcionista/**").hasAuthority("ROL_ADMIN")

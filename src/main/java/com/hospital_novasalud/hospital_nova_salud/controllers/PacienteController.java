@@ -45,9 +45,9 @@ public class PacienteController {
     public List<CitaMedicaEnvioDto> listarCitas() {
         return citaMedicaService.findByPaciente();
     }
-    @GetMapping("/listar-horario")
-    public List<HorarioDoctorEnvioDto> listarHorarioDoctor() {
-        return pacienteService.findHorarioDoctor();
+    @GetMapping("/listar-horario/{id}")
+    public List<HorarioDoctorEnvioDto> listarHorarioDoctor(@PathVariable Long id) {
+        return pacienteService.findHorarioDoctor(id);
     }
 
     @PostMapping("/registrar")

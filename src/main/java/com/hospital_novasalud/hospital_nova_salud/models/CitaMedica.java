@@ -2,6 +2,8 @@ package com.hospital_novasalud.hospital_nova_salud.models;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +27,9 @@ public class CitaMedica {
     @JoinColumn(name = "horario_id", nullable = false)
     HorarioDoctor horarioDoctor;
     
+    @Enumerated(EnumType.STRING)
+    private EstadoCitaEnum estado;
+
     public CitaMedica() {
     }
     public CitaMedica(Paciente paciente, Doctor doctor, HorarioDoctor horarioDoctor) {
@@ -57,4 +62,11 @@ public class CitaMedica {
         this.horarioDoctor = horarioDoctor;
     }
     
+    public EstadoCitaEnum getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoCitaEnum estado) {
+        this.estado = estado;
+    }
 }
