@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.GestionCitaDto;
@@ -38,6 +39,10 @@ public class DoctorController {
     @GetMapping("/listar")
     public List<DoctorEnvioDto> listarDoctores(){
         return doctorService.findAll();
+    }
+    @GetMapping("/listar-citas")
+    public List<CitaMedicaEnvioDto> listarCitasDoctores(){
+        return doctorService.findCitasByDoctor();
     }
     @GetMapping("/listar-especialidad/{id}")
     public List<DoctorDto> listarDoctoresPorEspecialidad(@PathVariable Long id){

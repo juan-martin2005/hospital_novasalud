@@ -3,6 +3,7 @@ package com.hospital_novasalud.hospital_nova_salud.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.GestionCitaDto;
@@ -16,6 +17,7 @@ import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
 public interface IDoctorService {
 
     List<DoctorEnvioDto> findAll();
+    List<CitaMedicaEnvioDto> findCitasByDoctor();
     List<DoctorDto> findByEspecialidad(Long id);
     Optional<Doctor> findDoctorById(Long id);
     Validaciones save(DoctorDto doc);

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.hospital_novasalud.hospital_nova_salud.dto.CitaMedicaEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.DoctorEnvioDto;
 import com.hospital_novasalud.hospital_nova_salud.dto.GestionCitaDto;
@@ -66,6 +67,16 @@ public class DoctorService implements IDoctorService{
     public List<DoctorEnvioDto> findAll() {
         return doctorRepository.findByUsuario_EstadoId(1).stream().map(DoctorEnvioDto::new).toList();
     }
+    @Override
+    public List<CitaMedicaEnvioDto> findCitasByDoctor() {
+        Authentication usuarioName = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuario = usuarioRepository.findByNombreUsua(usuarioName.getName()).orElseThrow();
+        Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
+
+
+        return citaMedicaRepository.findByDoctor_IdAndEstado(doctor.getId(), EstadoCitaEnum.OCUPADO).stream().map(CitaMedicaEnvioDto::new).toList();
+    }
+
     @Override
     public List<HorarioDoctorEnvioDto> findHorarioDoctor() {
         Authentication usuarioName = SecurityContextHolder.getContext().getAuthentication();

@@ -13,4 +13,5 @@ public interface ICitaMedicaRepository extends JpaRepository<CitaMedica, Long>{
     boolean existsByHorarioDoctor_Id(Long id);
     List<CitaMedica> findByHorarioDoctorId(Long horarioDoctorId);
     List<CitaMedica> findByEstado(EstadoCitaEnum estado);
+    List<CitaMedica> findByDoctor_IdAndEstado(Long id, EstadoCitaEnum estado);
 }
