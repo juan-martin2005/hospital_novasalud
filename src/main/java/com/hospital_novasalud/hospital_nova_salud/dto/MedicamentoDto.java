@@ -10,5 +10,5 @@ public record MedicamentoDto (String id,
                               @NotNull @Min(1) Integer cantidad, //Faltaba el Min(1)
                               @NotBlank String fecha_ingreso,
                               @NotBlank String fecha_vencimiento,
-                              @NotBlank String precio_unitario){
+                              @NotBlank Double precio_unitario){
 }

@@ -18,3 +18,16 @@ insert into especialidades (nombre, descripcion) values ('Endocrinología', 'Est
 insert into especialidades (nombre, descripcion) values ('Urología', 'Tratamiento de enfermedades del sistema urinario y reproductor masculino.');
 -- Admin de prueba
 insert into usuarios(estado_id, rol_id, sexo, numero, apellido, contrasena, nombre, nombre_usua) values (1, 1, 'M', '924102235', 'Anonymus','$2a$10$bR4qy1aE8DQN5pMI8sCBuu9mTkGqQrAPttlN6iNygDXb1R/jAiF2G','Admin', 'ADMIN');
+-- Medicamentos 
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Paracetamol', 'Analgésico y antipirético', '2023-10-01', '2025-10-01', 100, 0.50);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Ibuprofeno', 'Antiinflamatorio no esteroideo', '2023-10-01', '2025-10-01', 200, 0.75);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Amoxicilina', 'Antibiótico de amplio espectro', '2023-10-01', '2025-10-01', 150, 1.20);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Aspirina', 'Antiinflamatorio y analgésico', '2023-10-01', '2025-10-01', 120, 0.40);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Omeprazol', 'Inhibidor de la bomba de protones', '2023-10-01', '2025-10-01', 80, 1.50);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Loratadina', 'Antihistamínico para alergias', '2023-10-01', '2025-10-01', 90, 0.60);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Metformina', 'Medicamento para la diabetes tipo 2', '2023-10-01', '2025-10-01', 110, 1.00);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Simvastatina', 'Medicamento para el colesterol alto', '2023-10-01', '2025-10-01', 130, 1.80);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Levotiroxina', 'Medicamento para el hipotiroidismo', '2023-10-01', '2025-10-01', 70, 2.00);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Atorvastatina', 'Medicamento para el colesterol alto', '2023-10-01', '2025-10-01', 140, 1.90);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Clopidogrel', 'Antiplaquetario para prevenir coágulos', '2023-10-01', '2025-10-01', 160, 2.50);
+insert into medicamentos(nombre, descripcion, fecha_ingreso, fecha_vencimiento, cantidad, precio_unitario) values ('Furosemida', 'Diurético para la hipertensión', '2023-10-01', '2025-10-01', 170, 0.70);

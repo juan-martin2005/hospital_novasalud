@@ -31,7 +31,7 @@ public class MedicamentoService implements IMedicamentoService {
                     medicamento.getCantidad(),
                     medicamento.getFechaIngreso().toString(),
                     medicamento.getFechaVencimiento().toString(),
-                    String.valueOf(medicamento.getPrecioUnitario()));
+                    medicamento.getPrecioUnitario());
         }else{
             throw new EntityNotFoundException("Medicamento no encontrado");
         }
@@ -48,7 +48,7 @@ public class MedicamentoService implements IMedicamentoService {
                         medicamento.getCantidad(),
                         medicamento.getFechaIngreso().toString(),
                         medicamento.getFechaVencimiento().toString(),
-                        String.valueOf(medicamento.getPrecioUnitario())))
+                        medicamento.getPrecioUnitario()))
                 .collect(Collectors.toList());
     }
 
@@ -80,7 +80,7 @@ public class MedicamentoService implements IMedicamentoService {
                     savedMedicamento.getCantidad(),
                     savedMedicamento.getFechaIngreso().toString(),
                     savedMedicamento.getFechaVencimiento().toString(),
-                    String.valueOf(savedMedicamento.getPrecioUnitario()));
+                    savedMedicamento.getPrecioUnitario());
         }else{
             throw new EntityNotFoundException("Medicamento "+ nombre +" ya existe");
         }
@@ -118,7 +118,7 @@ public class MedicamentoService implements IMedicamentoService {
                 savedMedicamento.getCantidad(),
                 savedMedicamento.getFechaIngreso().toString(),
                 savedMedicamento.getFechaVencimiento().toString(),
-                String.valueOf(savedMedicamento.getPrecioUnitario()));
+                savedMedicamento.getPrecioUnitario());
     }
 
     @Override

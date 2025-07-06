@@ -77,7 +77,7 @@ public class PacienteService implements IPacienteService{
         usuario.setSexo(pa.getSexo());
         usuario.setEstado(estadoActivo);
         usuario.setRol(rol);
-        usuario = usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
 
         paciente.setUsuario(usuario);
         pacienteRepository.save(paciente);

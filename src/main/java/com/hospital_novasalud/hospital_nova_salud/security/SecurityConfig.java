@@ -48,7 +48,7 @@ public class SecurityConfig {
             .requestMatchers("api/doctor/cita/gestion/**").hasAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.GET, "/api/paciente/listar").hasAnyAuthority( "ROL_DOCTOR", "ROL_RECEPCIONISTA")
             .requestMatchers("/api/recepcionista/medicamento/**").hasAnyAuthority("ROL_RECEPCIONISTA","ROL_DOCTOR")
-                .requestMatchers(HttpMethod.GET, "/api/doctor/listar-horario/{doctorId}").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/doctor/listar-horario/{doctorId}").permitAll()
             .requestMatchers("/api/paciente/**").hasAuthority("ROL_PACIENTE")
             //Añadí los endpoints faltantes
 
