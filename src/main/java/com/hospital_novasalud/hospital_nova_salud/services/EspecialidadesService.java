@@ -11,6 +11,7 @@ import com.hospital_novasalud.hospital_nova_salud.models.Especialidad;
 import com.hospital_novasalud.hospital_nova_salud.repositories.IEspecialidadRepository;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 
+
 @Service
 public class EspecialidadesService implements IEspecialidadesService{
 
@@ -21,7 +22,14 @@ public class EspecialidadesService implements IEspecialidadesService{
     public List<EspecialidadDto> findAll() {
         return especialidadRepository.findAll().stream().map(EspecialidadDto::new).toList();
     }
-
+    @Override
+    public List<EspecialidadDto> findById(Long id) {
+        Optional<Especialidad> especialidadOpt = especialidadRepository.findById(id);
+        if (especialidadOpt.isEmpty()) {
+            return List.of(); // Retorna una lista vacía si no se encuentra la especialidad
+        }
+        return especialidadOpt.stream().map(EspecialidadDto::new).toList();
+    }
     @Override
     public Validaciones save(Especialidad especialidad) {
         boolean existeEspecialidad = especialidadRepository.existsByNombre(especialidad.getNombre());

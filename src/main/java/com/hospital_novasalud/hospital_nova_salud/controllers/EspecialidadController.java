@@ -36,6 +36,10 @@ public class EspecialidadController {
     public List<EspecialidadDto> listarEspecialidades() {
         return especialidadesService.findAll();
     }
+    @GetMapping("/listar/{id}")
+    public List<EspecialidadDto> listarEspecialidadesId(@PathVariable Long id) {
+        return especialidadesService.findById(id);
+    }
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarEspecialidad(@Valid @RequestBody Especialidad especialidad, BindingResult result) {
         if(result.hasFieldErrors()) {

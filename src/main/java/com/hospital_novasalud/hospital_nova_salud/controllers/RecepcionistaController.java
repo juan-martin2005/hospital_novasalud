@@ -96,13 +96,18 @@ public class RecepcionistaController {
     }
 
     @PostMapping("/medicamento/crear")
-    ResponseEntity<?> addMedicamento(@Valid @RequestBody MedicamentoDto medicamentoDTO){
+    ResponseEntity<?> addMedicamento(@Valid @RequestBody MedicamentoDto medicamentoDTO, BindingResult result){
+        if(result.hasFieldErrors()){
+            return ValidarCampos.validation(result);
+        }
         return new ResponseEntity<>(this.medicamentoService.addMedicamento(medicamentoDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/medicamento/actualizar/{id}")
-    ResponseEntity<?> updateMedicamento(@Valid @RequestBody MedicamentoDto medicamentoDTO,
-                                                     @PathVariable Long id){
+    ResponseEntity<?> updateMedicamento(@Valid @RequestBody MedicamentoDto medicamentoDTO, @PathVariable Long id, BindingResult result){
+        if (result.hasFieldErrors()) {
+            return ValidarCampos.validation(result);
+        }
         return new ResponseEntity<>(this.medicamentoService.updateMedicamento(medicamentoDTO, id), HttpStatus.ACCEPTED);
     }
 
