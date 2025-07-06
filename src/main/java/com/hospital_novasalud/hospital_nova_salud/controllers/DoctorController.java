@@ -52,6 +52,11 @@ public class DoctorController {
     public List<HorarioDoctorEnvioDto> listarHorario(){
         return doctorService.findHorarioDoctor();
     }
+    //Lista horario por doctor
+    @GetMapping("/listar-horario/{doctorId}")
+    public List<HorarioDoctorEnvioDto> listarHorarioPorDoctor(@PathVariable Long doctorId){
+        return doctorService.findHorarioByDoctorId(doctorId);
+    }
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarDoctor(@Valid @RequestBody DoctorDto doctor, BindingResult result){
         Map<String, String> mensaje = new HashMap<>();

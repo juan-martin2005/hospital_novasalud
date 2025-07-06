@@ -43,10 +43,13 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/doctor/listar-citas").hasAnyAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.GET, "/api/especialidades/listar").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/doctor/listar").permitAll()
+            .requestMatchers("api/doctor/cita/gestion/**").hasAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.GET, "/api/paciente/listar").hasAnyAuthority( "ROL_DOCTOR", "ROL_RECEPCIONISTA")
-            .requestMatchers("/api/recepcionista/medicamento/**").hasAuthority("ROL_RECEPCIONISTA")
+            .requestMatchers("/api/recepcionista/medicamento/**").hasAnyAuthority("ROL_RECEPCIONISTA","ROL_DOCTOR")
+            .requestMatchers(HttpMethod.GET, "/api/doctor/listar-horario/{doctorId}").permitAll()
             .requestMatchers("/api/paciente/**").hasAuthority("ROL_PACIENTE")
-            
+            //Añadí los endpoints faltantes
+
             .requestMatchers("/api/doctor/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/usuarios/**").hasAuthority("ROL_ADMIN")
             .requestMatchers("/api/recepcionista/**").hasAuthority("ROL_ADMIN")

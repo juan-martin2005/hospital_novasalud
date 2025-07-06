@@ -15,7 +15,6 @@ import com.hospital_novasalud.hospital_nova_salud.validaciones.Validaciones;
 import com.hospital_novasalud.hospital_nova_salud.validaciones.ValidarHorario;
 
 public interface IDoctorService {
-
     List<DoctorEnvioDto> findAll();
     List<CitaMedicaEnvioDto> findCitasByDoctor();
     List<DoctorDto> findByEspecialidad(Long id);
@@ -28,5 +27,5 @@ public interface IDoctorService {
     Especialidad findEspecialidad(DoctorDto doc);
     List<HorarioDoctorEnvioDto> findHorarioDoctor();
     GestionCitaDto finalizarCita(GestionCitaDto gestionCita, Long id);
-
+    List<HorarioDoctorEnvioDto> findHorarioByDoctorId(Long doctorId); //Método abstracto para getear horario por doctor
 }

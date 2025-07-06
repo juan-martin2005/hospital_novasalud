@@ -72,9 +72,7 @@ public class DoctorService implements IDoctorService{
         Authentication usuarioName = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuario = usuarioRepository.findByNombreUsua(usuarioName.getName()).orElseThrow();
         Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
-
-
-        return citaMedicaRepository.findByDoctor_IdAndEstado(doctor.getId(), EstadoCitaEnum.OCUPADO).stream().map(CitaMedicaEnvioDto::new).toList();
+        return citaMedicaRepository.findByDoctor_Id(doctor.getId()).stream().map(CitaMedicaEnvioDto::new).toList(); //Acá geteaba citas por estado, se deberian de getear todas para gestionarlas en el front
     }
 
     @Override
@@ -84,6 +82,14 @@ public class DoctorService implements IDoctorService{
         Doctor doctor = doctorRepository.findByUsuarioId(usuario.getId());
         return horarioDoctorRepository.findByDoctor_Id(doctor.getId()).stream().map(HorarioDoctorEnvioDto::new).toList();
     }
+    @Override
+    public List<HorarioDoctorEnvioDto> findHorarioByDoctorId(Long doctorId) {
+        return horarioDoctorRepository.findByDoctor_Id(doctorId)
+                .stream()
+                .map(HorarioDoctorEnvioDto::new)
+                .toList();
+    }
+
     @Override
     public Validaciones save(DoctorDto doc) {
         boolean existeNombreUsuario = usuarioRepository.existsByNombreUsua(doc.getUsername());

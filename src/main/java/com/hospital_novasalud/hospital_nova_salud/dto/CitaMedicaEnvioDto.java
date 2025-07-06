@@ -11,7 +11,7 @@ public class CitaMedicaEnvioDto {
     private final String doctor;
     private final LocalDate fechaCita;
     private final LocalTime horaCita;
-
+    private final String estado; //Se añade al dto para gestionarlo desde el frontend
     
     public CitaMedicaEnvioDto(CitaMedica cita) {
         this.id = cita.getId();
@@ -19,8 +19,9 @@ public class CitaMedicaEnvioDto {
         this.doctor = "Dr. " + cita.getDoctor().getUsuario().getNombre();
         this.fechaCita = cita.getHorarioDoctor().getFecha();
         this.horaCita = cita.getHorarioDoctor().getHorarioInicio();
+        this.estado = cita.getEstado() != null ? cita.getEstado().name() : "SIN_ESTADO"; //Lo mismo de arriba xd
     }
-
+    
     public Long getId() {
         return id;
     }
@@ -38,5 +39,9 @@ public class CitaMedicaEnvioDto {
 
     public LocalTime getHoraCita() {
         return horaCita;
+    }
+
+    public String getEstado() {
+        return estado;
     }
 }
