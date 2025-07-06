@@ -39,6 +39,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/doctor/agregar-horario").hasAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.POST, "/api/paciente/registrar").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/paciente/cita/{id}/boleta").hasAuthority("ROL_PACIENTE")
+            .requestMatchers(HttpMethod.POST, "/api/paciente/registrar-cita-con-id").hasAuthority("ROL_PACIENTE")
             .requestMatchers(HttpMethod.GET, "/api/doctor/listar-horario").hasAnyAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.GET, "/api/doctor/listar-citas").hasAnyAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.GET, "/api/especialidades/listar").permitAll()
@@ -46,7 +48,7 @@ public class SecurityConfig {
             .requestMatchers("api/doctor/cita/gestion/**").hasAuthority("ROL_DOCTOR")
             .requestMatchers(HttpMethod.GET, "/api/paciente/listar").hasAnyAuthority( "ROL_DOCTOR", "ROL_RECEPCIONISTA")
             .requestMatchers("/api/recepcionista/medicamento/**").hasAnyAuthority("ROL_RECEPCIONISTA","ROL_DOCTOR")
-            .requestMatchers(HttpMethod.GET, "/api/doctor/listar-horario/{doctorId}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/doctor/listar-horario/{doctorId}").permitAll()
             .requestMatchers("/api/paciente/**").hasAuthority("ROL_PACIENTE")
             //Añadí los endpoints faltantes
 
@@ -66,7 +68,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://mango-flower-0e8720c0f.6.azurestaticapps.net"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
         configuration.setAllowCredentials(true);
